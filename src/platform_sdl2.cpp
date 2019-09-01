@@ -13,7 +13,10 @@ void initGL();
 Result<Platform> platformInit() {
     // Init
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        return resultCreateError<Platform>("sdl_init", SDL_GetError());
+        return resultCreateError<Platform>(
+            "platform_init",
+            SDL_GetError()
+        );
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -37,13 +40,19 @@ Result<Platform> platformInit() {
     // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     if (window == nullptr) {
-        return resultCreateError<Platform>("create_window", SDL_GetError());
+        return resultCreateError<Platform>(
+            "create_window",
+            SDL_GetError()
+        );
     }
 
     auto glContext = SDL_GL_CreateContext(window);
 
     if (glContext == nullptr) {
-        return resultCreateError<Platform>("create_opengl_context", SDL_GetError());
+        return resultCreateError<Platform>(
+            "create_opengl_context",
+            SDL_GetError()
+        );
     }
 
     SDL_GL_MakeCurrent(window, glContext);
@@ -51,7 +60,10 @@ Result<Platform> platformInit() {
     SDL_GL_SetSwapInterval(1);
 
     if (glewInit() != GLEW_OK) {
-        return resultCreateError<Platform>("glew_init", "glew init error");
+        return resultCreateError<Platform>(
+            "gl_init",
+            "glewInit() error"
+        );
     }
 
     IMGUI_CHECKVERSION();

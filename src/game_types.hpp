@@ -1,5 +1,6 @@
 #pragma once
 
+#include "stdio.h"
 #include <stdint.h>
 #include <float.h>
 #include <stddef.h>
