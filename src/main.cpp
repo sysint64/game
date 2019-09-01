@@ -6,15 +6,6 @@
 #include <iostream>
 
 #include "platform.hpp"
-
-#ifdef PLATFORM_SDL2
-#include "platform_sdl2.hpp"
-#endif
-
-#ifdef PLATFORM_GLFW
-#include "platform_glfw.hpp"
-#endif
-
 #include "game.hpp"
 #include "game_types.hpp"
 

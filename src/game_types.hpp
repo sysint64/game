@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include "stdio.h"
 #include <stdint.h>
 #include <float.h>
@@ -81,4 +82,18 @@ inline bool resultHasError(Result<T> result) {
 template<typename T>
 inline bool resultIsSuccess(Result<T> result) {
     return result.resultCase == ResultCase::success;
+}
+
+template<typename T, typename R>
+inline Result<T> mapError(Result<R> result) {
+    return resultCreateError(
+        result.error.code,
+        result.error.message
+    );
+}
+
+template<typename T>
+inline T getResultPayload(Result<T> result) {
+    assert(result.resultCase == ResultCase::success);
+    return result.payload;
 }

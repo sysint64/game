@@ -23,8 +23,11 @@ Result<Platform> platformInit() {
         );
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
     GLFWwindow* window = glfwCreateWindow(1024, 768, "Game", nullptr, nullptr);
 
     if (!window) {
@@ -41,14 +44,14 @@ Result<Platform> platformInit() {
         .window = window
     };
 
-    if (glewInit() != GLEW_OK) {
-        return resultCreateError<Platform>(
-            "gl_init",
-            "glewInit() error"
-        );
-    }
+    // if (glewInit() != GLEW_OK) {
+    //     return resultCreateError<Platform>(
+    //         "gl_init",
+    //         "glewInit() error"
+    //     );
+    // }
 
-    initGL();
+    // initGL();
 
     return resultCreateSuccess(platform);
 }
@@ -56,8 +59,8 @@ Result<Platform> platformInit() {
 bool platformEventLoop(Platform platform) {
     int width, height;
     glfwGetFramebufferSize(platform.window, &width, &height);
-    glViewport(0, 0, width, height);
-    glClear(GL_COLOR_BUFFER_BIT);
+    // glViewport(0, 0, width, height);
+    // glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(platform.window);
     glfwPollEvents();
     return !glfwWindowShouldClose(platform.window);
