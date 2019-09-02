@@ -9,10 +9,6 @@
 #include "platform.hpp"
 #include <SDL2/SDL.h>
 
-// #include <GL/glew.h>
-
-void initGL();
-
 Result<Platform> platformInit() {
     // Init
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -23,7 +19,6 @@ Result<Platform> platformInit() {
     }
 
     // Create window
-
     auto window = SDL_CreateWindow(
         "Game", // TODO(Andrey): rm hardcode
         SDL_WINDOWPOS_CENTERED,

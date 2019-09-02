@@ -4,7 +4,7 @@ CXX = clang++
 CXXFLAGS = -I. -Ilib/imgui/ -Ilib/imgui/examples/ -Wall -std=c++11 -g
 
 # ENUM: GLFW, SDL
-PLATFORM = SDL
+PLATFORM = GLFW
 
 # ENUM: OPENGL, VULKAN, METAL
 GAPI = OPENGL

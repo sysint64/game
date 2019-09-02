@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "gapi.hpp"
 #include "platform.hpp"
 #include "platform_glfw.hpp"
 
@@ -23,11 +24,6 @@ Result<Platform> platformInit() {
         );
     }
 
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
     GLFWwindow* window = glfwCreateWindow(1024, 768, "Game", nullptr, nullptr);
 
     if (!window) {
@@ -37,12 +33,23 @@ Result<Platform> platformInit() {
         );
     }
 
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-
     Platform platform = {
         .window = window
     };
+
+    auto createContextResult = gapiCreateContext(platform);
+
+    if (resultHasError(createContextResult)) {
+        // return mapError<Platform>(createContextResult);
+    }
+
+    platform.gapiContext = getResultPayload(createContextResult);
+
+    auto initGapiResult = gapiInit();
+
+    if (resultHasError(initGapiResult)) {
+    //     return mapError<Platform>(initGapiResult);
+    }
 
     // if (glewInit() != GLEW_OK) {
     //     return resultCreateError<Platform>(
@@ -57,12 +64,15 @@ Result<Platform> platformInit() {
 }
 
 bool platformEventLoop(Platform platform) {
-    int width, height;
-    glfwGetFramebufferSize(platform.window, &width, &height);
+    // int width, height;
+    // glfwGetFramebufferSize(platform.window, &width, &height);
     // glViewport(0, 0, width, height);
     // glClear(GL_COLOR_BUFFER_BIT);
-    glfwSwapBuffers(platform.window);
+    // glfwSwapBuffers(platform.window);
+    gapiClear(0, 0, 0);
+    gapiSwapWindow(platform);
     glfwPollEvents();
+
     return !glfwWindowShouldClose(platform.window);
 }
 
@@ -74,16 +84,7 @@ void platformSwapWindow(Platform platform) {
 }
 
 void platformShutdown(Platform platform) {
+    gapiShutdown(platform.gapiContext);
     glfwDestroyWindow(platform.window);
     glfwTerminate();
-}
-
-void initGL() {
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_MULTISAMPLE);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.f, 0.f, 0.f, 0.f);
-    glClear(GL_COLOR_BUFFER_BIT);
 }
