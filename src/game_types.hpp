@@ -67,6 +67,18 @@ inline Result<T> resultCreateGeneralError(const ErrorCode errorCode, const char*
     return resultCreateError<T>(error);
 }
 
+template<typename T, typename... Args>
+inline Result<T> resultCreateGeneralError(
+    const ErrorCode errorCode,
+    const char* fmt,
+    Args... args
+) {
+    GeneralError error;
+    error.code = errorCode;
+    sprintf(&error.message[0], fmt, args...);
+    return resultCreateError<T>(error);
+}
+
 template<typename T>
 inline Result<T> resultCreateSuccess(T payload) {
     Result<T> result;

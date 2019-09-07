@@ -7,7 +7,7 @@ CXXFLAGS = -I. -Ilib/imgui/ -Ilib/imgui/examples/ -Wall -std=c++11 -g
 PLATFORM = GLFW
 
 # ENUM: OPENGL, VULKAN, METAL
-GAPI = OPENGL
+GAPI = VULKAN
 IMGUI_FLAGS = -DIMGUI_IMPL_OPENGL_LOADER_GLEW
 
 UNAME_S := $(shell uname -s)

@@ -10,8 +10,6 @@
 #include "game_types.hpp"
 
 int main() {
-    bool running = true;
-
     if (initGameState()) {
         auto platformInitResult = platformInit();
 
@@ -21,6 +19,7 @@ int main() {
 
             if (resultIsSuccess(createWindowResult)) {
                 auto window = getResultPayload(createWindowResult);
+                bool running = true;
 
                 while (running) {
                     running = platformEventLoop(platform, window);
