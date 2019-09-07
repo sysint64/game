@@ -3,19 +3,26 @@
 #include "platform.hpp"
 #include "platform_glfw.hpp"
 
-Result<GApiContext> gapiCreateContext(Platform platform) {
+Result<GApiContext> gapiCreateContext(Platform platform, Window window) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
-    glfwMakeContextCurrent(platform.window);
+    glfwMakeContextCurrent(window.glfwWindow);
     glfwSwapInterval(1);
+
+    if (glewInit() != GLEW_OK) {
+        return resultCreateGeneralError<GApiContext>(
+            ErrorCode::GAPI_INIT,
+            "glewInit() error"
+        );
+    }
 
     GApiContext gapiContext = {};
     return resultCreateSuccess(gapiContext);
 }
 
-void gapiSwapWindow(Platform platform) {
-    glfwSwapBuffers(platform.window);
+void gapiSwapWindow(Platform platform, Window window) {
+    glfwSwapBuffers(window.glfwWindow);
 }
 
 void gapiShutdown(GApiContext context) {

@@ -1,6 +1,6 @@
 #pragma once
 
-struct GApi {};
+struct GApi;
 
 struct GApiContext;
 
@@ -35,10 +35,10 @@ struct GApiContext;
 
 void gapiClear(float r, float g, float b);
 
-Result<GApiContext> gapiCreateContext(Platform platform);
+Result<GApiContext> gapiCreateContext(Platform platform, Window window);
 
 Result<GApi> gapiInit();
 
-void gapiSwapWindow(Platform platform);
+void gapiSwapWindow(Platform platform, Window window);
 
 void gapiShutdown(GApiContext context);

@@ -12,8 +12,7 @@ IMGUI_FLAGS = -DIMGUI_IMPL_OPENGL_LOADER_GLEW
 
 UNAME_S := $(shell uname -s)
 
-IMGUI_SOURCES = lib/imgui/examples/imgui_impl_opengl3.cpp \
-	lib/imgui/imgui.cpp \
+IMGUI_SOURCES = lib/imgui/imgui.cpp \
 	lib/imgui/imgui_draw.cpp \
 	lib/imgui/imgui_widgets.cpp \
 	lib/imgui/imgui_demo.cpp
@@ -40,6 +39,7 @@ endif
 
 ifeq ($(GAPI),OPENGL)
 	SOURCES += src/gapi_opengl.cpp
+	IMGUI_SOURCES += lib/imgui/examples/imgui_impl_opengl3.cpp
 	LDFLAGS += -lGL -lGLEW
 	CXXFLAGS += -DGAPI_OPENGL
 
@@ -52,7 +52,9 @@ endif
 
 ifeq ($(GAPI),VULKAN)
 	CXXFLAGS += -DGAPI_VULKAN
+	LDFLAGS += -lvulkan
 	SOURCES += src/gapi_vulkan.cpp
+	IMGUI_SOURCES += lib/imgui/examples/imgui_impl_vulkan.cpp
 
 	ifeq ($(PLATFORM),SDL)
 		SOURCES += src/gapi_vulkan_sdl2.cpp

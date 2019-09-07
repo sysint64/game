@@ -2,6 +2,7 @@
 
 #include "game_types.hpp"
 #include "platform.hpp"
+#include "errors.hpp"
 
 struct MemoryBuffer {
     void* base;
@@ -38,6 +39,9 @@ inline Result<MemoryBuffer> allocMemoryBuffer(u64 size) {
         return resultCreateSuccess<MemoryBuffer>(buffer);
     }
     else {
-        return resultCreateError<MemoryBuffer>("allocate", "platformAlloc has failed");
+        return resultCreateGeneralError<MemoryBuffer>(
+            ErrorCode::ALLOCATION_ERROR,
+            "platformAlloc has failed"
+        );
     }
 }

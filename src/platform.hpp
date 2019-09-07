@@ -2,6 +2,8 @@
 
 struct Platform;
 
+struct Window;
+
 #ifdef PLATFORM_SDL2
 #include "platform_sdl2.hpp"
 #endif
@@ -14,11 +16,15 @@ struct Platform;
 
 Result<Platform> platformInit();
 
-bool platformEventLoop(Platform platform);
+Result<Window> platformCreateWindow(Platform platform);
+
+bool platformEventLoop(Platform platform, Window window);
 
 float platformGetTicks();
 
-void platformSwapWindow(Platform platform);
+void platformSwapWindow(Platform platform, Window window);
+
+void platformDestroyWindow(Window window);
 
 void platformShutdown(Platform platform);
 

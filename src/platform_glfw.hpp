@@ -5,6 +5,10 @@
 #include <GLFW/glfw3.h>
 
 struct Platform {
-    GLFWwindow* window;
+    GApi gapi;
+};
+
+struct Window {
+    GLFWwindow* glfwWindow;
     GApiContext gapiContext;
 };

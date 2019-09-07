@@ -4,6 +4,10 @@
 #include <SDL2/SDL.h>
 
 struct Platform {
-    SDL_Window* window;
+    GApi gapi;
+};
+
+struct Window {
+    SDL_Window* sdlWindow;
     GApiContext gapiContext;
 };

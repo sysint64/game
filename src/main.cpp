@@ -11,14 +11,26 @@
 
 int main() {
     bool running = true;
-    auto platformInitResult = platformInit();
 
     if (initGameState()) {
-        if (resultIsSuccess(platformInitResult)) {
-            auto platform = platformInitResult.payload;
+        auto platformInitResult = platformInit();
 
-            while (running) {
-                running = platformEventLoop(platform);
+        if (resultIsSuccess(platformInitResult)) {
+            auto platform = getResultPayload(platformInitResult);
+            auto createWindowResult = platformCreateWindow(platform);
+
+            if (resultIsSuccess(createWindowResult)) {
+                auto window = getResultPayload(createWindowResult);
+
+                while (running) {
+                    running = platformEventLoop(platform, window);
+                }
+
+                platformDestroyWindow(window);
+            }
+            else {
+                // TODO(Andrey): log
+                puts(createWindowResult.error.message);
             }
 
             platformShutdown(platform);

@@ -6,6 +6,7 @@
 #include <float.h>
 #include <stddef.h>
 #include "string.h"
+#include "errors.hpp"
 
 typedef int8_t i8;
 typedef int16_t i16;
@@ -38,20 +39,20 @@ enum class ResultCase {
     success
 };
 
-struct Error {
-    char code[60];
+struct GeneralError {
+    ErrorCode code;
     char message[256];
 };
 
-template<typename T>
+template<typename T, typename E = GeneralError>
 struct Result {
     ResultCase resultCase;
     T payload;
-    Error error;
+    E error;
 };
 
-template<typename T>
-inline Result<T> resultCreateError(const Error error) {
+template<typename T, typename E = GeneralError>
+inline Result<T> resultCreateError(const E error) {
     Result<T> result;
     result.resultCase = ResultCase::error;
     result.error = error;
@@ -59,9 +60,9 @@ inline Result<T> resultCreateError(const Error error) {
 }
 
 template<typename T>
-inline Result<T> resultCreateError(const char* errorCode, const char* errorMessage) {
-    Error error;
-    strncpy(error.code, errorCode, 60);
+inline Result<T> resultCreateGeneralError(const ErrorCode errorCode, const char* errorMessage = "") {
+    GeneralError error;
+    error.code = errorCode;
     strncpy(error.message, errorMessage, 100);
     return resultCreateError<T>(error);
 }
@@ -85,11 +86,13 @@ inline bool resultIsSuccess(Result<T> result) {
 }
 
 template<typename T, typename R>
-inline Result<T> mapError(Result<R> result) {
-    return resultCreateError(
-        result.error.code,
-        result.error.message
-    );
+inline Result<T> switchError(Result<R> result) {
+    return resultCreateError<T>(result.error);
+}
+
+template<typename E, typename T, typename EIN>
+inline Result<T, E> mapError(Result<T, EIN> result) {
+    return resultCreateError<T>(result.error);
 }
 
 template<typename T>

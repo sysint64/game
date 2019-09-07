@@ -1,8 +1,6 @@
 #include <cstdio>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
+#include "errors.hpp"
 #include "gapi.hpp"
 #include "platform.hpp"
 #include "platform_glfw.hpp"
@@ -18,62 +16,56 @@ Result<Platform> platformInit() {
     glfwSetErrorCallback(errorCallback);
 
     if (!glfwInit()) {
-        return resultCreateError<Platform>(
-            "platform_init",
+        return resultCreateGeneralError<Platform>(
+            ErrorCode::PLATFORM_INIT,
             "glfwInit() error"
         );
     }
 
-    GLFWwindow* window = glfwCreateWindow(1024, 768, "Game", nullptr, nullptr);
-
-    if (!window) {
-        return resultCreateError<Platform>(
-            "create_window",
-            "glfwCreateWindow() error"
-        );
-    }
-
-    Platform platform = {
-        .window = window
-    };
-
-    auto createContextResult = gapiCreateContext(platform);
-
-    if (resultHasError(createContextResult)) {
-        // return mapError<Platform>(createContextResult);
-    }
-
-    platform.gapiContext = getResultPayload(createContextResult);
-
     auto initGapiResult = gapiInit();
 
     if (resultHasError(initGapiResult)) {
-    //     return mapError<Platform>(initGapiResult);
+        return switchError<Platform>(initGapiResult);
     }
 
-    // if (glewInit() != GLEW_OK) {
-    //     return resultCreateError<Platform>(
-    //         "gl_init",
-    //         "glewInit() error"
-    //     );
-    // }
-
-    // initGL();
+    Platform platform = {
+        .gapi = getResultPayload(initGapiResult)
+    };
 
     return resultCreateSuccess(platform);
 }
 
-bool platformEventLoop(Platform platform) {
-    // int width, height;
-    // glfwGetFramebufferSize(platform.window, &width, &height);
-    // glViewport(0, 0, width, height);
-    // glClear(GL_COLOR_BUFFER_BIT);
-    // glfwSwapBuffers(platform.window);
+Result<Window> platformCreateWindow(Platform platform) {
+    GLFWwindow* glfwWindow = glfwCreateWindow(1024, 768, "Game", nullptr, nullptr);
+
+    if (!glfwWindow) {
+        return resultCreateGeneralError<Window>(
+            ErrorCode::CREATE_WINDOW,
+            "glfwCreateWindow() error"
+        );
+    }
+
+    Window window = {
+        .glfwWindow = glfwWindow
+    };
+
+    auto createContextResult = gapiCreateContext(platform, window);
+
+    if (resultHasError(createContextResult)) {
+        return switchError<Window>(createContextResult);
+    }
+
+    window.gapiContext = getResultPayload(createContextResult);
+
+    return resultCreateSuccess(window);
+}
+
+bool platformEventLoop(Platform platform, Window window) {
     gapiClear(0, 0, 0);
-    gapiSwapWindow(platform);
+    gapiSwapWindow(platform, window);
     glfwPollEvents();
 
-    return !glfwWindowShouldClose(platform.window);
+    return !glfwWindowShouldClose(window.glfwWindow);
 }
 
 float platformGetTicks() {
@@ -83,8 +75,11 @@ float platformGetTicks() {
 void platformSwapWindow(Platform platform) {
 }
 
+void platformDestroyWindow(Window window) {
+    gapiShutdown(window.gapiContext);
+    glfwDestroyWindow(window.glfwWindow);
+}
+
 void platformShutdown(Platform platform) {
-    gapiShutdown(platform.gapiContext);
-    glfwDestroyWindow(platform.window);
     glfwTerminate();
 }

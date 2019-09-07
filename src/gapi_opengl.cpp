@@ -1,15 +1,10 @@
 #include "gapi.hpp"
+#include "gapi_opengl.hpp"
+#include "errors.hpp"
 
 #include <GL/glew.h>
 
 Result<GApi> gapiInit() {
-    if (glewInit() != GLEW_OK) {
-        return resultCreateError<GApi>(
-            "gl_init",
-            "glewInit() error"
-        );
-    }
-
     glDisable(GL_CULL_FACE);
     glDisable(GL_MULTISAMPLE);
     glDisable(GL_DEPTH_TEST);
