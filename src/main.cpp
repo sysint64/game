@@ -14,11 +14,11 @@ int main() {
         auto platformInitResult = platformInit();
 
         if (resultIsSuccess(platformInitResult)) {
-            auto platform = getResultPayload(platformInitResult);
+            auto platform = resultGetPayload(platformInitResult);
             auto createWindowResult = platformCreateWindow(platform);
 
             if (resultIsSuccess(createWindowResult)) {
-                auto window = getResultPayload(createWindowResult);
+                auto window = resultGetPayload(createWindowResult);
                 bool running = true;
 
                 while (running) {

@@ -2,11 +2,27 @@
 #include "gapi_vulkan_glfw.hpp"
 #include "platform.hpp"
 #include "platform_glfw.hpp"
+#include "game_types.hpp"
 #include <vulkan/vulkan.h>
+#include <vector>
 
-static VkResult createInstance(GApiContext* gapiContext);
+#define VALIDATION_LAYERS_COUNT 1
+
+const char* validationLayers[VALIDATION_LAYERS_COUNT] = {
+    "VK_LAYER_KHRONOS_validation"
+};
+
+#ifdef NDEBUG
+    const bool enableValidationLayers = false;
+#else
+    const bool enableValidationLayers = true;
+#endif
+
+static Result<VkResult> createInstance(GApiContext* gapiContext);
 
 static Result<GApiContext> initVulkan();
+
+static bool checkValidationLayerSupport();
 
 Result<GApiContext> gapiCreateContext(Platform platform, Window window) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -26,7 +42,11 @@ static Result<GApiContext> initVulkan() {
     GApiContext gapiContext = {};
     auto result = createInstance(&gapiContext);
 
-    if (result != VK_SUCCESS) {
+    if (resultHasError(result)) {
+        return switchError<GApiContext>(result);
+    }
+
+    if (resultGetPayload(result) != VK_SUCCESS) {
         return resultCreateGeneralError<GApiContext>(
             ErrorCode::GAPI_CREATE_CONTEXT,
             "vkCreateInstance failed with code: %d", result
@@ -36,7 +56,14 @@ static Result<GApiContext> initVulkan() {
     return resultCreateSuccess(gapiContext);
 }
 
-static VkResult createInstance(GApiContext* gapiContext) {
+static Result<VkResult> createInstance(GApiContext* gapiContext) {
+    if (enableValidationLayers && !checkValidationLayerSupport()) {
+        return resultCreateGeneralError<VkResult>(
+            ErrorCode::GAPI_CREATE_CONTEXT,
+            "Validation layers requested, but not available!"
+        );
+    }
+
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Hello Triangle";
@@ -56,7 +83,41 @@ static VkResult createInstance(GApiContext* gapiContext) {
 
     createInfo.enabledExtensionCount = glfwExtensionCount;
     createInfo.ppEnabledExtensionNames = glfwExtensions;
+
+    if (enableValidationLayers) {
+        createInfo.enabledLayerCount = VALIDATION_LAYERS_COUNT;
+        createInfo.ppEnabledLayerNames = validationLayers;
+    } else {
+        createInfo.enabledLayerCount = 0;
+    }
+
     createInfo.enabledLayerCount = 0;
 
-    return vkCreateInstance(&createInfo, nullptr, &gapiContext->instance);
+    auto result = vkCreateInstance(&createInfo, nullptr, &gapiContext->instance);
+    return resultCreateSuccess(result);
+}
+
+static bool checkValidationLayerSupport() {
+    uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+    for (const char* layerName : validationLayers) {
+        bool layerFound = false;
+
+        for (const auto& layerProperties : availableLayers) {
+            if (strcmp(layerName, layerProperties.layerName) == 0) {
+                layerFound = true;
+                break;
+            }
+        }
+
+        if (!layerFound) {
+            return false;
+        }
+    }
+
+    return true;
 }

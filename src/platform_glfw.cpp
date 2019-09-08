@@ -29,7 +29,7 @@ Result<Platform> platformInit() {
     }
 
     Platform platform = {
-        .gapi = getResultPayload(initGapiResult)
+        .gapi = resultGetPayload(initGapiResult)
     };
 
     return resultCreateSuccess(platform);
@@ -55,7 +55,7 @@ Result<Window> platformCreateWindow(Platform platform) {
         return switchError<Window>(createContextResult);
     }
 
-    window.gapiContext = getResultPayload(createContextResult);
+    window.gapiContext = resultGetPayload(createContextResult);
 
     return resultCreateSuccess(window);
 }

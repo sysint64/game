@@ -108,7 +108,7 @@ inline Result<T, E> mapError(Result<T, EIN> result) {
 }
 
 template<typename T>
-inline T getResultPayload(Result<T> result) {
+inline T resultGetPayload(Result<T> result) {
     assert(result.resultCase == ResultCase::success);
     return result.payload;
 }
