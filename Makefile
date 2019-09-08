@@ -2,11 +2,16 @@ BUILDDIR = build
 LDFLAGS =
 CXX = clang++
 CXXFLAGS = -I. -Ilib/imgui/ -Ilib/imgui/examples/ -Wall -std=c++11 -g
+SANITIZE = false
+
+ifeq ($(SANITIZE), true)
+	CXXFLAGS += -fsanitize=address
+endif
 
 SINGLE_SOURCE = true
 
 # ENUM: GLFW, SDL
-PLATFORM = SDL
+PLATFORM = GLFW
 
 # ENUM: OPENGL, VULKAN, METAL
 GAPI = OPENGL
@@ -19,7 +24,7 @@ IMGUI_SOURCES = lib/imgui/imgui.cpp \
 	lib/imgui/imgui_widgets.cpp \
 	lib/imgui/imgui_demo.cpp
 
-SOURCES := $(shell find src -type f -name '*.cpp' ! -name 'platform*.cpp' ! -name 'gapi*.cpp')
+SOURCES := $(shell find src -type f -name '*.cpp' ! -name 'platform_*.cpp' ! -name 'gapi_*.cpp')
 
 ifeq ($(UNAME_S),Linux)
 	SOURCES += src/platform_linux.cpp
@@ -74,8 +79,11 @@ build: $(BINARY)
 
 ifeq ($(SINGLE_SOURCE), true)
 
-$(BINARY):
+$(BINARY): tidy
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -DSINGLE_SOURCE src/main.cpp -o build/$(BINARY)
+
+tidy:
+	clang-tidy src/main.cpp -- $(CXXFLAGS) $(LDFLAGS) -DSINGLE_SOURCE
 
 else
 

@@ -36,4 +36,5 @@
 #include "platform_linux.cpp"
 #endif
 
+#include "gapi.cpp"
 #include "game.cpp"

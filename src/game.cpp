@@ -3,6 +3,8 @@
 #include "stdio.h"
 #include "platform.hpp"
 #include "memory.hpp"
+#include "gapi.hpp"
+#include "gapi.hpp"
 
 bool initGameState() {
     auto bufferResult = allocMemoryBuffer(gigabytes(1));
@@ -16,4 +18,8 @@ bool initGameState() {
     gameState.totalMemory.currentBuffer = &gameState.rootMemoryBuffer;
 
     return true;
+}
+
+void gameMainLoop() {
+    gapiClear(0, 0, 0);
 }

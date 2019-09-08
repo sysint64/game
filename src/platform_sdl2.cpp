@@ -72,9 +72,6 @@ bool platformEventLoop(Platform platform, Window window) {
         }
     }
 
-    gapiClear(0, 0, 0);
-    gapiSwapWindow(platform, window);
-
     return true;
 }
 

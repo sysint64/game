@@ -27,6 +27,8 @@ int main() {
 
                 while (running) {
                     running = platformEventLoop(platform, window);
+                    gameMainLoop();
+                    gapiSwapWindow(platform, window);
                 }
 
                 platformDestroyWindow(window);
