@@ -80,7 +80,7 @@ CameraMatrices gapiCreateOrthoCameraMatrices(const OthroCameraTransforms transfo
 
 // Transforms
 
-glm::mat4 create2DModelMatrix(Transforms2D transforms);
+glm::mat4 gapiCreate2DModelMatrix(Transforms2D transforms);
 
 // Geometry
 
@@ -98,6 +98,8 @@ GeometryBuffer gapiReallocateVec2fBuffer(glm::vec2* data, size_t count, bool isD
 
 GeometryBuffer gapiReallocateVec3fBuffer(glm::vec3* data, size_t count, bool isDynamic = true);
 
+void gapiDeleteBuffer(GeometryBuffer* buffer);
+
 GeometryVAO gapiCreateVAO();
 
 void gapiBindVAO(GeometryVAO* vao);
@@ -106,9 +108,7 @@ void gapiCreateVector2fVAO(GeometryBuffer* buffer, u32 location);
 
 void gapiCreateVector3fVAO(GeometryBuffer* buffer, u32 location);
 
-void gapiBiindIndices(GeometryBuffer* indices);
-
-void gapiDeleteBuffer(GeometryBuffer* buffer);
+void gapiBindIndices(GeometryBuffer* indices);
 
 void gapiRenderIndexedGeometry(uint indicesLength, RenderMode renderMode = RenderMode::triangles);
 
@@ -124,7 +124,7 @@ void gapiUnbindShaderProgram();
 
 u32 gapiGetShaderUniformLocation(const ShaderProgram program, const char* location);
 
-void deleteShaderProgram(ShaderProgram* program);
+void gapiDeleteShaderProgram(ShaderProgram* program);
 
 
 // Shader Uniforms
@@ -143,7 +143,7 @@ void gapiSetShaderProgramUniformVec3f(ShaderProgram program, u32 location, glm::
 
 void gapiSetShaderProgramUniformVec4f(ShaderProgram program, u32 location, glm::vec4 val);
 
-void setShaderProgramUniformMat4f(ShaderProgram program, u32 location, glm::mat4 matrix);
+void gapiSetShaderProgramUniformMat4f(ShaderProgram program, u32 location, glm::mat4 matrix);
 
 //
 

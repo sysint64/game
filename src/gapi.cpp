@@ -32,7 +32,7 @@ CameraMatrices createOrthoCameraMatrices(const OthroCameraTransforms transforms)
     return cameraMatrices;
 }
 
-glm::mat4 create2DModelMatrix(Transforms2D transforms) {
+glm::mat4 gapiCreate2DModelMatrix(Transforms2D transforms) {
     const auto translateMatrix = glm::translate(
         glm::mat4(),
         glm::vec3(transforms.position, 0.0f)
