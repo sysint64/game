@@ -3,11 +3,13 @@ LDFLAGS =
 CXX = clang++
 CXXFLAGS = -I. -Ilib/imgui/ -Ilib/imgui/examples/ -Wall -std=c++11 -g
 
+SINGLE_SOURCE = true
+
 # ENUM: GLFW, SDL
-PLATFORM = GLFW
+PLATFORM = SDL
 
 # ENUM: OPENGL, VULKAN, METAL
-GAPI = VULKAN
+GAPI = OPENGL
 IMGUI_FLAGS = -DIMGUI_IMPL_OPENGL_LOADER_GLEW
 
 UNAME_S := $(shell uname -s)
@@ -70,12 +72,21 @@ BINARY = game
 
 build: $(BINARY)
 
+ifeq ($(SINGLE_SOURCE), true)
+
+$(BINARY):
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -DSINGLE_SOURCE src/main.cpp -o build/$(BINARY)
+
+else
+
 $(BINARY): $(OBJECTS)
 	$(CXX) $(LDFLAGS) $(OBJECTS) -o build/$(BINARY)
 
 $(BUILDDIR)/%.o: %.cpp
 	mkdir -p $(BUILDDIR)/$(dir $<)
 	$(CXX) $(CXXFLAGS) $(IMGUI_FLAGS) -I$(dir $<) -c $< -o $@
+
+endif
 
 run: $(BINARY)
 	./$(BUILDDIR)/$(BINARY)

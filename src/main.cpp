@@ -9,6 +9,10 @@
 #include "game.hpp"
 #include "game_types.hpp"
 
+#ifdef SINGLE_SOURCE
+#include "single_source_link.hpp"
+#endif
+
 int main() {
     if (initGameState()) {
         auto platformInitResult = platformInit();
