@@ -19,7 +19,7 @@ void gapiClear(float r, float g, float b) {
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-static GeometryBuffer createGeometryBuffer(void* data, size_t size, bool isDynamic) {
+static GeometryBuffer createGeometryBuffer(const void* data, size_t size, bool isDynamic) {
     GeometryBuffer buffer;
 
     glGenBuffers(1, &buffer.id);
@@ -39,19 +39,19 @@ void gapiDeleteBuffer(GeometryBuffer* buffer) {
     glDeleteBuffers(1, &buffer->id);
 }
 
-GeometryBuffer gapiCreateU32Buffer(u32* data, size_t count, bool isDynamic) {
+GeometryBuffer gapiCreateU32Buffer(const u32* data, size_t count, bool isDynamic) {
     return createGeometryBuffer(data, sizeof(u32) * count, isDynamic);
 }
 
-GeometryBuffer gapiCreateF32Buffer(f32* data, size_t count, bool isDynamic) {
+GeometryBuffer gapiCreateF32Buffer(const f32* data, size_t count, bool isDynamic) {
     return createGeometryBuffer(data, sizeof(f32) * count, isDynamic);
 }
 
-GeometryBuffer gapiCreateVec2fBuffer(glm::vec2* data, size_t count, bool isDynamic) {
+GeometryBuffer gapiCreateVec2fBuffer(const glm::vec2* data, size_t count, bool isDynamic) {
     return createGeometryBuffer(data, sizeof(f32) * 2 * count, isDynamic);
 }
 
-GeometryBuffer gapiCreateVec3fBuffer(glm::vec3* data, size_t count, bool isDynamic) {
+GeometryBuffer gapiCreateVec3fBuffer(const glm::vec3* data, size_t count, bool isDynamic) {
     return createGeometryBuffer(data, sizeof(f32) * 3 * count, isDynamic);
 
 }

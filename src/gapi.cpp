@@ -1,7 +1,7 @@
 #include "gapi.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
-CameraMatrices createOrthoCameraMatrices(const OthroCameraTransforms transforms) {
+CameraMatrices gapiCreateOrthoCameraMatrices(const OthroCameraTransforms transforms) {
     glm::vec3 eye = glm::vec3(transforms.position, 1.0f);
     glm::vec3 target = glm::vec3(transforms.position, 0.0f);
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);

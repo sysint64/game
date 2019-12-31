@@ -24,11 +24,11 @@ int main() {
             if (resultIsSuccess(createWindowResult)) {
                 auto window = resultGetPayload(createWindowResult);
                 bool running = true;
+                afterInitGameState();
 
                 while (running) {
                     running = platformEventLoop(platform, window);
-                    gameMainLoop();
-                    gapiSwapWindow(platform, window);
+                    gameMainLoop(platform, window);
                 }
 
                 platformDestroyWindow(window);

@@ -4,7 +4,21 @@
 #include "platform.hpp"
 #include "memory.hpp"
 #include "gapi.hpp"
-#include "gapi.hpp"
+#include "gapi_geometries.hpp"
+
+static void initSprite();
+
+static void initShaders();
+
+static void initTexture();
+
+static void updateTestSprite(const float deltaTime);
+
+static void updateCamera();
+
+static void onRender();
+
+static void onProgress(const float deltaTime);
 
 bool initGameState() {
     auto bufferResult = allocMemoryBuffer(gigabytes(1));
@@ -20,6 +34,72 @@ bool initGameState() {
     return true;
 }
 
-void gameMainLoop() {
+bool afterInitGameState() {
+    initSprite();
+    initShaders();
+    initTexture();
+    return true;
+}
+
+static void initSprite() {
+    gameState.testSprite.indicesBuffer = gapiCreateU32Buffer(&quadIndices[0], quadIndicesCount, false);
+    gameState.testSprite.verticesBuffer = gapiCreateVec2fBuffer(&quadVertices[0], quadVerticesCount, false);
+    gameState.testSprite.texCoordsBuffer = gapiCreateVec2fBuffer(&quadTexCoords[0], quadTexCoordsCount, false);
+    gameState.testSprite.vao = gapiCreateVAO();
+
+    gapiBindVAO(&gameState.testSprite.vao);
+    gapiCreateVector2fVAO(&gameState.testSprite.verticesBuffer, 0);
+    gapiCreateVector2fVAO(&gameState.testSprite.texCoordsBuffer, 1);
+}
+
+static void initShaders() {
+}
+
+static void initTexture() {
+}
+
+void gameMainLoop(Platform platform, Window window) {
+    gameState.currentTime = platformGetTicks();
+    gameState.deltaTime = gameState.lastTime - gameState.currentTime;
+
+    if (gameState.currentTime >= gameState.lastTime + gameState.partTime) {
+        onProgress(gameState.deltaTime);
+        onRender();
+        gameState.frames += 1;
+        gameState.lastTime = gameState.currentTime;
+        gapiSwapWindow(platform, window);
+    }
+
+    if (gameState.currentTime >= gameState.frameTime + 1000.0) {
+        gameState.frameTime = gameState.currentTime;
+        gameState.fps = gameState.frames;
+        gameState.frames = 1;
+
+        printf("FPS: %d\n", gameState.fps);
+    }
+}
+
+static void onRender() {
     gapiClear(0, 0, 0);
+}
+
+static void onProgress(const float deltaTime) {
+    updateCamera();
+    updateTestSprite(deltaTime);
+}
+
+static void updateCamera() {
+    gameState.cameraMatrices = gapiCreateOrthoCameraMatrices(gameState.cameraTransform);
+}
+
+static void updateTestSprite(const float deltaTime) {
+    gameState.testSpriteTransforms.position = glm::vec2(
+        gameState.cameraTransform.viewportSize.x / 2.f,
+        gameState.cameraTransform.viewportSize.y / 2.f
+    );
+    gameState.testSpriteTransforms.scaling = glm::vec2(430.0f, 600.0f);
+    gameState.testSpriteTransforms.rotation += 0.25f * deltaTime;
+
+    gameState.testSpriteModelMatrix = gapiCreate2DModelMatrix(gameState.testSpriteTransforms);
+    gameState.testSpriteMVPMatrix = gameState.cameraMatrices.mvpMatrix * gameState.testSpriteModelMatrix;
 }

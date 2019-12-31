@@ -84,19 +84,19 @@ glm::mat4 gapiCreate2DModelMatrix(Transforms2D transforms);
 
 // Geometry
 
-GeometryBuffer gapiCreateU32Buffer(u32* data, size_t count, bool isDynamic = true);
+GeometryBuffer gapiCreateU32Buffer(const u32* data, size_t count, bool isDynamic = true);
 
-GeometryBuffer gapiCreateF32Buffer(f32* data, size_t count, bool isDynamic = true);
+GeometryBuffer gapiCreateF32Buffer(const f32* data, size_t count, bool isDynamic = true);
 
-GeometryBuffer gapiCreateVec2fBuffer(glm::vec2* data, size_t count, bool isDynamic = true);
+GeometryBuffer gapiCreateVec2fBuffer(const glm::vec2* data, size_t count, bool isDynamic = true);
 
-GeometryBuffer gapiCreateVec3fBuffer(glm::vec3* data, size_t count, bool isDynamic = true);
+GeometryBuffer gapiCreateVec3fBuffer(const glm::vec3* data, size_t count, bool isDynamic = true);
 
-GeometryBuffer gapiReallocateU32Buffer(u32* data, size_t count, bool isDynamic = true);
+GeometryBuffer gapiReallocateU32Buffer(const u32* data, size_t count, bool isDynamic = true);
 
-GeometryBuffer gapiReallocateVec2fBuffer(glm::vec2* data, size_t count, bool isDynamic = true);
+GeometryBuffer gapiReallocateVec2fBuffer(const glm::vec2* data, size_t count, bool isDynamic = true);
 
-GeometryBuffer gapiReallocateVec3fBuffer(glm::vec3* data, size_t count, bool isDynamic = true);
+GeometryBuffer gapiReallocateVec3fBuffer(const glm::vec3* data, size_t count, bool isDynamic = true);
 
 void gapiDeleteBuffer(GeometryBuffer* buffer);
 
