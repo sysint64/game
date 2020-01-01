@@ -32,6 +32,7 @@ struct GApiContext;
 
 #include "game_types.hpp"
 #include "platform.hpp"
+#include "assets.hpp"
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 
@@ -68,10 +69,17 @@ struct Shader;
 
 struct Texture2D;
 
+struct Texture2DParameters {
+    bool wrapS;
+    bool wrapT;
+    bool minFilter;
+    bool magFilter;
+};
+
 struct Transforms2D {
     glm::vec2 position;
     glm::vec2 scaling;
-    float rotation = 0.f;
+    float rotation { 0.f };
 };
 
 // Camera
@@ -144,6 +152,10 @@ void gapiSetShaderProgramUniformVec3f(ShaderProgram program, u32 location, glm::
 void gapiSetShaderProgramUniformVec4f(ShaderProgram program, u32 location, glm::vec4 val);
 
 void gapiSetShaderProgramUniformMat4f(ShaderProgram program, u32 location, glm::mat4 matrix);
+
+// Texture
+
+Texture2D gapiCreateTexture2D(const AssetData data, const Texture2DParameters params);
 
 //
 

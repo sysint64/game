@@ -1,5 +1,5 @@
 BUILDDIR = build
-LDFLAGS =
+LDFLAGS = -ljpeg -lpng
 CXX = clang++
 CXXFLAGS = -I. -Ilib/imgui/ -Ilib/imgui/examples/ -Wall -std=c++11 -g
 SANITIZE = false
@@ -8,7 +8,7 @@ ifeq ($(SANITIZE), true)
 	CXXFLAGS += -fsanitize=address
 endif
 
-SINGLE_SOURCE = true
+SINGLE_SOURCE = false
 
 # ENUM: GLFW, SDL
 PLATFORM = SDL

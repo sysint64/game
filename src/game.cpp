@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "platform.hpp"
 #include "memory.hpp"
+#include "assets.hpp"
 #include "gapi.hpp"
 #include "gapi_geometries.hpp"
 
@@ -10,7 +11,7 @@ static void initSprite();
 
 static void initShaders();
 
-static void initTexture();
+static bool initTexture();
 
 static void updateTestSprite(const float deltaTime);
 
@@ -53,9 +54,30 @@ static void initSprite() {
 }
 
 static void initShaders() {
+
 }
 
-static void initTexture() {
+static bool initTexture() {
+    const Result<AssetData> testTextureResult = platformLoadAssetData(
+        AssetType::texture,
+        "test.jpg"
+    );
+
+    if (resultHasError(testTextureResult)) {
+        // TODO(Andrey): Log
+        puts(testTextureResult.error.message);
+        exit(1);
+        return false;
+    }
+
+    const AssetData testTexture = resultGetPayload(testTextureResult);
+
+    const Texture2DParameters params = {
+        .minFilter = true,
+        .magFilter = true,
+    };
+    gameState.spriteTexture = gapiCreateTexture2D(testTexture, params);
+    return true;
 }
 
 void gameMainLoop(Platform platform, Window window) {
@@ -80,7 +102,7 @@ void gameMainLoop(Platform platform, Window window) {
 }
 
 static void onRender() {
-    gapiClear(0, 0, 0);
+    gapiClear(150.0f/255.0f, 150.0f/255.0f, 150.0f/255.0f);
 }
 
 static void onProgress(const float deltaTime) {

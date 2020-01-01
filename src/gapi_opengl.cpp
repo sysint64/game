@@ -92,3 +92,8 @@ void gapiRenderIndexedGeometry(uint indicesLength, RenderMode renderMode) {
             puts("unknown render mode");
     }
 }
+
+Texture2D gapiCreateTexture2D(const AssetData data, const Texture2DParameters params) {
+    Texture2D texture;
+    return texture;
+}
