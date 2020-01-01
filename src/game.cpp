@@ -11,7 +11,7 @@ static void initSprite();
 
 static void initShaders();
 
-static bool initTexture();
+static void initTexture();
 
 static void updateTestSprite(const float deltaTime);
 
@@ -54,10 +54,21 @@ static void initSprite() {
 }
 
 static void initShaders() {
+    const Result<AssetData> fragmentShaderResult = platformLoadAssetData(
+        AssetType::shader,
+        "fragment_texture.glsl"
+    );
 
+    const Result<AssetData> vertexShaderResult = platformLoadAssetData(
+        AssetType::shader,
+        "vertex_transform.glsl"
+    );
+
+    const AssetData fragmentShaderData = resultUnwrap(fragmentShaderResult);
+    const AssetData vertexShaderData = resultUnwrap(vertexShaderResult);
 }
 
-static bool initTexture() {
+static void initTexture() {
     const Result<AssetData> testTextureResult = platformLoadAssetData(
         AssetType::texture,
         "test.jpg"
@@ -67,7 +78,7 @@ static bool initTexture() {
         // TODO(Andrey): Log
         puts(testTextureResult.error.message);
         exit(1);
-        return false;
+        return;
     }
 
     const AssetData testTexture = resultGetPayload(testTextureResult);
@@ -77,7 +88,6 @@ static bool initTexture() {
         .magFilter = true,
     };
     gameState.spriteTexture = gapiCreateTexture2D(testTexture, params);
-    return true;
 }
 
 void gameMainLoop(Platform platform, Window window) {

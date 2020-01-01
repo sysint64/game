@@ -82,6 +82,7 @@ METHODDEF(void) jpegErrorExit (j_common_ptr cinfo) {
     longjmp(err->setJmpBuffer, 1);
 }
 
+// TODO(Andrey): Memory managment
 static Result<AssetData> loadJPEGTexture(const char* assetName) {
     AssetData assetData;
 
@@ -96,14 +97,14 @@ static Result<AssetData> loadJPEGTexture(const char* assetName) {
     jpeg_decompress_struct cinfo;
     JSAMPARRAY buffer;
     int rowStride;
-    char path[256] { 0 };
     JpegErrorMgr jerr;
 
+    char path[256] { 0 };
     platformBuildPath(&path[0], "assets", "textures", assetName);
 
     FILE* infile = fopen(&path[0], "rb");
 
-    if (infile == NULL) {
+    if (infile == nullptr) {
         return resultCreateGeneralError<AssetData>(
             ErrorCode::LOAD_ASSET,
             "Can't open asset: %s", &path[0]
@@ -149,9 +150,27 @@ static Result<AssetData> loadPNGTexture(const char* assetName) {
     );
 }
 
+// TODO(Andrey): Memory managment
 static Result<AssetData> loadShader(const char* assetName) {
-    return resultCreateGeneralError<AssetData>(
-        ErrorCode::LOAD_ASSET,
-        "SHADER Not implemented yet"
-    );
+    char path[256] { 0 };
+    char str[10000] { 0 };
+    platformBuildPath(&path[0], "assets", "shaders", assetName);
+
+    FILE* infile = fopen(&path[0], "r");
+
+    if (infile == nullptr) {
+        return resultCreateGeneralError<AssetData>(
+            ErrorCode::LOAD_ASSET,
+            "Can't open asset: %s", &path[0]
+        );
+    }
+
+    while (fgets(str, 10000, infile) != nullptr);
+
+    fclose(infile);
+    puts(str);
+
+    AssetData assetData;
+
+    return resultCreateSuccess(assetData);
 }

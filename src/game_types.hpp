@@ -1,11 +1,12 @@
 #pragma once
 
 #include <cassert>
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <float.h>
 #include <stddef.h>
-#include "string.h"
+#include <string.h>
 #include "errors.hpp"
 
 typedef int8_t i8;
@@ -110,5 +111,16 @@ inline Result<T, E> mapError(Result<T, EIN> result) {
 template<typename T>
 inline T resultGetPayload(Result<T> result) {
     assert(result.resultCase == ResultCase::success);
+    return result.payload;
+}
+
+template<typename T>
+inline T resultUnwrap(Result<T> result) {
+    if (result.resultCase != ResultCase::success) {
+        // TODO(Andrey): Log
+        puts(result.error.message);
+        exit(1);
+    }
+
     return result.payload;
 }
