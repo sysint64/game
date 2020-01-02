@@ -119,7 +119,7 @@ inline T resultUnwrap(Result<T> result) {
     if (result.resultCase != ResultCase::success) {
         // TODO(Andrey): Log
         puts(result.error.message);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     return result.payload;

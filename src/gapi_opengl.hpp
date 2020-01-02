@@ -13,10 +13,14 @@ struct GeometryVAO {
     GLuint id;
 };
 
-struct ShaderProgram {
+struct Shader {
+    GLuint id;
+    const char* name;
 };
 
-struct Shader {
+struct ShaderProgram {
+    GLuint id;
+    const char* name;
 };
 
 struct Texture2D {

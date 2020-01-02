@@ -66,6 +66,9 @@ static void initShaders() {
 
     const AssetData fragmentShaderData = resultUnwrap(fragmentShaderResult);
     const AssetData vertexShaderData = resultUnwrap(vertexShaderResult);
+
+    const auto vertexShaderResult2 = gapiCreateShader("vertex_transform", ShaderType::vertex, vertexShaderData);
+    resultUnwrap(vertexShaderResult2);
 }
 
 static void initTexture() {
@@ -74,15 +77,7 @@ static void initTexture() {
         "test.jpg"
     );
 
-    if (resultHasError(testTextureResult)) {
-        // TODO(Andrey): Log
-        puts(testTextureResult.error.message);
-        exit(1);
-        return;
-    }
-
-    const AssetData testTexture = resultGetPayload(testTextureResult);
-
+    const AssetData testTexture = resultUnwrap(testTextureResult);
     const Texture2DParameters params = {
         .minFilter = true,
         .magFilter = true,

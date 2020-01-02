@@ -150,27 +150,40 @@ static Result<AssetData> loadPNGTexture(const char* assetName) {
     );
 }
 
+char shaderMemory[1000000] { 0 };
+size_t shaderMemoryCursor = 0;
+
 // TODO(Andrey): Memory managment
 static Result<AssetData> loadShader(const char* assetName) {
     char path[256] { 0 };
-    char str[10000] { 0 };
     platformBuildPath(&path[0], "assets", "shaders", assetName);
 
-    FILE* infile = fopen(&path[0], "r");
+    FILE* file = fopen(&path[0], "r");
 
-    if (infile == nullptr) {
+    if (file == nullptr) {
         return resultCreateGeneralError<AssetData>(
             ErrorCode::LOAD_ASSET,
             "Can't open asset: %s", &path[0]
         );
     }
 
-    while (fgets(str, 10000, infile) != nullptr);
+    char c;
+    size_t start = shaderMemoryCursor;
 
-    fclose(infile);
-    puts(str);
+    while ((c = getc(file)) != EOF) {
+        shaderMemory[shaderMemoryCursor] = c;
+        shaderMemoryCursor += 1;
+    }
 
-    AssetData assetData;
+    shaderMemory[shaderMemoryCursor] = 0;
+    shaderMemoryCursor += 1;
+
+    fclose(file);
+
+    AssetData assetData = {
+        .size = shaderMemoryCursor - start,
+        .data = &shaderMemory[start]
+    };
 
     return resultCreateSuccess(assetData);
 }

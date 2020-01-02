@@ -122,7 +122,7 @@ void gapiRenderIndexedGeometry(uint indicesLength, RenderMode renderMode = Rende
 
 // Shaders
 
-Shader gapiCreateShader(const char* name, const ShaderType shaderType, const char* source);
+Result<Shader> gapiCreateShader(const char* name, const ShaderType shaderType, AssetData data);
 
 ShaderProgram gapiCreateShaderProgram(const char* name, Shader* shaders);
 
@@ -133,7 +133,6 @@ void gapiUnbindShaderProgram();
 u32 gapiGetShaderUniformLocation(const ShaderProgram program, const char* location);
 
 void gapiDeleteShaderProgram(ShaderProgram* program);
-
 
 // Shader Uniforms
 

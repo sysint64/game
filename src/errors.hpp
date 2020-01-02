@@ -10,4 +10,6 @@ enum class ErrorCode {
     // GAPI
     GAPI_INIT,
     GAPI_CREATE_CONTEXT,
+    GAPI_CREATE_SHADER,
+    GAPI_SHADER_STATUS,
 };
