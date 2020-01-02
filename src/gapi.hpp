@@ -124,7 +124,7 @@ void gapiRenderIndexedGeometry(uint indicesLength, RenderMode renderMode = Rende
 
 Result<Shader> gapiCreateShader(const char* name, const ShaderType shaderType, AssetData data);
 
-ShaderProgram gapiCreateShaderProgram(const char* name, Shader* shaders);
+Result<ShaderProgram> gapiCreateShaderProgram(const char* name, StaticArray<Shader> shaders);
 
 void gapiBindShaderProgram(ShaderProgram* program);
 

@@ -3,6 +3,7 @@
 #include "errors.hpp"
 
 static Result<GLint> checkShaderStatus(const Shader shader, const GLenum pname);
+static Result<GLint> checkProgramStatus(const ShaderProgram program, const GLenum pname);
 
 Result<GApi> gapiInit() {
     glDisable(GL_CULL_FACE);
@@ -167,7 +168,57 @@ static Result<GLint> checkShaderStatus(const Shader shader, const GLenum pname) 
     return resultCreateSuccess(status);
 }
 
-ShaderProgram gapiCreateShaderProgram(const char* name, Shader* shaders) {
+Result<ShaderProgram> gapiCreateShaderProgram(const char* name, StaticArray<Shader> shaders) {
+    ShaderProgram program;
+
+    program.id = glCreateProgram();
+    program.name = name;
+
+    for (size_t i = 0; i < shaders.size; i += 1) {
+        glAttachShader(program.id, shaders.items[i].id);
+    }
+
+    glLinkProgram(program.id);
+    const auto statusReault = checkProgramStatus(program, GL_LINK_STATUS);
+
+    if (resultHasError(statusReault)) {
+        return switchError<ShaderProgram>(statusReault);
+    }
+
+    return resultCreateSuccess(program);
+}
+
+static Result<GLint> checkProgramStatus(const ShaderProgram program, const GLenum pname) {
+    GLint status, length;
+    GLchar message[1024] { 0 };
+
+    glGetProgramiv(program.id, pname, &status);
+
+    if (status != GL_TRUE) {
+        glGetProgramInfoLog(program.id, 1024, &length, &message[0]);
+        const char* reason;
+
+        switch (pname) {
+            case GL_VALIDATE_STATUS:
+                reason = "Failed when validation shader program";
+                break;
+
+            case GL_LINK_STATUS:
+                reason = "Failed on linking program";
+                break;
+
+            default:
+                reason = "Failed";
+        }
+
+        return resultCreateGeneralError<GLint>(
+            ErrorCode::GAPI_SHADER_PROGRAM_STATUS,
+            "%s. program name: '%s', status: %d, message: '%s'",
+            reason, program.name, status, message
+        );
+    }
+
+    return resultCreateSuccess(status);
 }
 
 void gapiBindShaderProgram(ShaderProgram* program) {
@@ -177,6 +228,7 @@ void gapiUnbindShaderProgram() {
 }
 
 u32 gapiGetShaderUniformLocation(const ShaderProgram program, const char* location) {
+    return 0;
 }
 
 void gapiDeleteShaderProgram(ShaderProgram* program) {

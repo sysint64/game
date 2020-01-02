@@ -53,6 +53,13 @@ static void initSprite() {
     gapiCreateVector2fVAO(&gameState.testSprite.texCoordsBuffer, 1);
 }
 
+Shader shadersMemory[100000];
+size_t shadersMemoryCursor = 0;
+
+#define PUSH_SHADER(shader) \
+    memcpy(&shadersMemory[shadersMemoryCursor], &shader, sizeof(Shader)); \
+    shadersMemoryCursor += sizeof(Shader);
+
 static void initShaders() {
     const Result<AssetData> fragmentShaderResult = platformLoadAssetData(
         AssetType::shader,
@@ -67,8 +74,32 @@ static void initShaders() {
     const AssetData fragmentShaderData = resultUnwrap(fragmentShaderResult);
     const AssetData vertexShaderData = resultUnwrap(vertexShaderResult);
 
-    const auto vertexShaderResult2 = gapiCreateShader("vertex_transform", ShaderType::vertex, vertexShaderData);
-    resultUnwrap(vertexShaderResult2);
+    const auto vertexShaderResult2 = gapiCreateShader(
+        "vertex_transform",
+        ShaderType::vertex,
+        vertexShaderData
+    );
+    const auto fragmentShaderResult2 = gapiCreateShader(
+        "fragment_texture",
+        ShaderType::fragment,
+        fragmentShaderData
+    );
+
+    const Shader vertexShader = resultUnwrap(vertexShaderResult2);
+    const Shader fragmentShader = resultUnwrap(fragmentShaderResult2);
+
+    PUSH_SHADER(vertexShader);
+    PUSH_SHADER(fragmentShader);
+
+    const auto res = gapiCreateShaderProgram(
+        "test_shader_program",
+        StaticArray<Shader>{
+            .size = 2,
+            .items = shadersMemory
+        }
+    );
+
+    const ShaderProgram testShader = resultUnwrap(res);
 }
 
 static void initTexture() {
