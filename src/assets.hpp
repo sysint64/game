@@ -12,7 +12,7 @@ enum AssetType {
 
 struct AssetData {
     size_t size;
-    void* data;
+    u8* data;
 };
 
 enum TextureFormat {
@@ -21,7 +21,7 @@ enum TextureFormat {
 };
 
 struct TextureHeader {
-    i32 width;
-    i32 height;
+    u32 width;
+    u32 height;
     TextureFormat format;
 };

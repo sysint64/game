@@ -34,7 +34,7 @@ struct GameState {
     Transforms2D testSpriteTransforms;
     ShaderProgram spriteShader;
     u32 spriteShaderLocationMVP;
-    // u32 spriteShaderLocationColor;
+    u32 spriteShaderLocationTexture;
     CameraMatrices cameraMatrices;
     Texture2D spriteTexture;
     glm::mat4 testSpriteModelMatrix;

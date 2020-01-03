@@ -103,7 +103,59 @@ void gapiRenderIndexedGeometry(uint indicesLength, RenderMode renderMode) {
 
 Texture2D gapiCreateTexture2D(const AssetData data, const Texture2DParameters params) {
     Texture2D texture;
+    TextureHeader textureHeader = *((TextureHeader*) data.data);
+    u8* textureData = data.data + sizeof(TextureHeader);
+
+    texture.width = textureHeader.width;
+    texture.height = textureHeader.height;
+
+    GLenum format;
+
+    switch (textureHeader.format) {
+        case TextureFormat::rgb:
+            format = GL_RGB;
+            break;
+
+        case TextureFormat::rgba:
+            format = GL_RGBA;
+            break;
+    }
+
+    glGenTextures(1, &texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
+
+    // TODO: Not sure if I should use it
+    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D(
+        /* target */ GL_TEXTURE_2D,
+        /* level */ 0,
+        /* internalformat */ format,
+        /* width */ texture.width,
+        /* height */ texture.height,
+        /* border */ 0,
+        /* format */ format,
+        /* type */ GL_UNSIGNED_BYTE,
+        /* data */ textureData
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
     return texture;
+}
+
+void gapiDeleteTexture2D(Texture2D texture) {
+    glDeleteTextures(1, &texture.id);
+}
+
+void gapiBindTexture2D(Texture2D texture) {
+    glBindTexture(GL_TEXTURE_2D, texture.id);
+}
+
+void gapiUnbindTexture2D() {
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 // Shaders
@@ -181,6 +233,7 @@ Result<ShaderProgram> gapiCreateShaderProgram(const char* name, StaticArray<Shad
 
     for (size_t i = 0; i < shaders.size; i += 1) {
         glAttachShader(program.id, shaders.items[i].id);
+        puts(shaders.items[i].name);
     }
 
     glLinkProgram(program.id);
@@ -278,8 +331,10 @@ void gapiSetShaderProgramUniformUInt(ShaderProgram program, u32 location, u32 va
     glUniform1ui(location, val);
 }
 
-void gapiSetShaderProgramUniformTexture2D(ShaderProgram program, u32 location, Texture2D val) {
-    // TODO
+void gapiSetShaderProgramUniformTexture2D(ShaderProgram program, u32 location, Texture2D val, i32 index) {
+    glActiveTexture(GL_TEXTURE0 + index);
+    gapiBindTexture2D(val);
+    glUniform1i(location, index);
 }
 
 void gapiSetShaderProgramUniformVec2f(ShaderProgram program, u32 location, glm::vec2 val) {

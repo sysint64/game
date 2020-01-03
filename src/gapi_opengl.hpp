@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include "game_types.hpp"
 
 struct GApi {
 };
@@ -24,4 +25,7 @@ struct ShaderProgram {
 };
 
 struct Texture2D {
+    GLuint id = 0;
+    u32 width;
+    u32 height;
 };

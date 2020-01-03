@@ -82,17 +82,12 @@ METHODDEF(void) jpegErrorExit (j_common_ptr cinfo) {
     longjmp(err->setJmpBuffer, 1);
 }
 
+u8 textureMemory[1000000000] { 0 };
+size_t textureMemoryCursor = 0;
+
 // TODO(Andrey): Memory managment
 static Result<AssetData> loadJPEGTexture(const char* assetName) {
     AssetData assetData;
-
-    const TextureHeader textureHeader {
-        .width = 0,
-        .height = 0,
-        .format = TextureFormat::rgb
-    };
-
-    assetData.size += sizeof(TextureHeader);
 
     jpeg_decompress_struct cinfo;
     JSAMPARRAY buffer;
@@ -126,19 +121,35 @@ static Result<AssetData> loadJPEGTexture(const char* assetName) {
 
     jpeg_create_decompress(&cinfo);
     jpeg_stdio_src(&cinfo, infile);
-    jpeg_read_header(&cinfo, true);
+    jpeg_read_header(&cinfo, 0);
+
     jpeg_start_decompress(&cinfo);
     rowStride = cinfo.output_width * cinfo.output_components;
     buffer = (*cinfo.mem->alloc_sarray) ((j_common_ptr) &cinfo, JPOOL_IMAGE, rowStride, 1);
 
+    const size_t headerMemoryCursor = textureMemoryCursor;
+    assetData.size = sizeof(TextureHeader);
+    textureMemoryCursor += assetData.size;
+
     while (cinfo.output_scanline < cinfo.output_height) {
         jpeg_read_scanlines(&cinfo, buffer, 1);
-        // put_scanline_someplace(buffer[0], rowStride);
+        memcpy(&textureMemory[textureMemoryCursor], buffer[0], rowStride);
+        textureMemoryCursor += rowStride;
     }
 
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
     fclose(infile);
+
+    const TextureHeader textureHeader {
+        .width = cinfo.output_width,
+        .height = cinfo.output_height,
+        .format = TextureFormat::rgb
+    };
+
+    memcpy(&textureMemory[headerMemoryCursor], &textureHeader, sizeof(TextureHeader));
+    assetData.data = &textureMemory[headerMemoryCursor];
+    assetData.size = textureMemoryCursor - headerMemoryCursor;
 
     return resultCreateSuccess(assetData);
 }
@@ -182,7 +193,7 @@ static Result<AssetData> loadShader(const char* assetName) {
 
     AssetData assetData = {
         .size = shaderMemoryCursor - start,
-        .data = &shaderMemory[start]
+        .data = (u8*) &shaderMemory[start]
     };
 
     return resultCreateSuccess(assetData);

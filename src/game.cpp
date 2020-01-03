@@ -59,8 +59,8 @@ Shader shadersMemory[100000];
 size_t shadersMemoryCursor = 0;
 
 #define PUSH_SHADER(shader) \
-    memcpy(&shadersMemory[shadersMemoryCursor], &shader, sizeof(Shader)); \
-    shadersMemoryCursor += sizeof(Shader);
+    shadersMemory[shadersMemoryCursor] = shader; \
+    shadersMemoryCursor += 1;
 
 static void initShaders() {
     const Result<AssetData> fragmentShaderResult = platformLoadAssetData(
@@ -102,8 +102,12 @@ static void initShaders() {
     );
 
     gameState.spriteShader = resultUnwrap(res);
-    const auto locRes = gapiGetShaderUniformLocation(gameState.spriteShader, "MVP");
+
+    auto locRes = gapiGetShaderUniformLocation(gameState.spriteShader, "MVP");
     gameState.spriteShaderLocationMVP = resultUnwrap(locRes);
+
+    locRes = gapiGetShaderUniformLocation(gameState.spriteShader, "utexture");
+    gameState.spriteShaderLocationTexture = resultUnwrap(locRes);
 }
 
 static void initTexture() {
@@ -153,6 +157,13 @@ static void renderSprite() {
         gameState.spriteShader,
         gameState.spriteShaderLocationMVP,
         gameState.testSpriteMVPMatrix
+    );
+
+    gapiSetShaderProgramUniformTexture2D(
+        gameState.spriteShader,
+        gameState.spriteShaderLocationTexture,
+        gameState.spriteTexture,
+        0
     );
 
     gapiBindVAO(gameState.testSprite.vao);

@@ -147,7 +147,7 @@ void gapiSetShaderProgramUniformInt(ShaderProgram program, u32 location, i32 val
 
 void gapiSetShaderProgramUniformUInt(ShaderProgram program, u32 location, u32 val);
 
-void gapiSetShaderProgramUniformTexture2D(ShaderProgram program, u32 location, Texture2D val);
+void gapiSetShaderProgramUniformTexture2D(ShaderProgram program, u32 location, Texture2D val, i32 index);
 
 void gapiSetShaderProgramUniformVec2f(ShaderProgram program, u32 location, glm::vec2 val);
 
@@ -160,6 +160,12 @@ void gapiSetShaderProgramUniformMat4f(ShaderProgram program, u32 location, glm::
 // Texture
 
 Texture2D gapiCreateTexture2D(AssetData data, Texture2DParameters params);
+
+void gapiDeleteTexture2D(Texture2D texture);
+
+void gapiBindTexture2D(Texture2D texture);
+
+void gapiUnbindTexture2D();
 
 //
 
