@@ -64,8 +64,8 @@ GeometryVAO gapiCreateVAO() {
     return vao;
 }
 
-void gapiBindVAO(GeometryVAO* vao) {
-    glBindVertexArray(vao->id);
+void gapiBindVAO(GeometryVAO vao) {
+    glBindVertexArray(vao.id);
 }
 
 void gapiCreateVector2fVAO(GeometryBuffer* buffer, u32 location) {
@@ -80,8 +80,8 @@ void gapiCreateVector3fVAO(GeometryBuffer* buffer, u32 location) {
     glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
 
-void gapiBindIndices(GeometryBuffer* indices) {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices->id);
+void gapiBindIndices(GeometryBuffer indices) {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices.id);
 }
 
 void gapiRenderIndexedGeometry(uint indicesLength, RenderMode renderMode) {
@@ -90,9 +90,14 @@ void gapiRenderIndexedGeometry(uint indicesLength, RenderMode renderMode) {
             glDrawElements(GL_TRIANGLES, indicesLength, GL_UNSIGNED_INT, nullptr);
             break;
 
+        case RenderMode::triangleStrip:
+            glDrawElements(GL_TRIANGLE_STRIP, indicesLength, GL_UNSIGNED_INT, nullptr);
+            break;
+
         default:
             // TODO: log
             puts("unknown render mode");
+            exit(1);
     }
 }
 
@@ -221,41 +226,74 @@ static Result<GLint> checkProgramStatus(const ShaderProgram program, const GLenu
     return resultCreateSuccess(status);
 }
 
-void gapiBindShaderProgram(ShaderProgram* program) {
+void gapiBindShaderProgram(const ShaderProgram program) {
+
+#ifdef VALIDATE
+    glValidateProgram(program.id);
+    const auto statusReault = checkProgramStatus(program, GL_VALIDATE_STATUS);
+    resultUnwrap(statusReault);
+#endif
+
+    glUseProgram(program.id);
 }
 
 void gapiUnbindShaderProgram() {
+    glUseProgram(0);
 }
 
-u32 gapiGetShaderUniformLocation(const ShaderProgram program, const char* location) {
-    return 0;
+Result<u32> gapiGetShaderUniformLocation(const ShaderProgram program, const char* location) {
+    const GLint loc = glGetUniformLocation(program.id, location);
+
+    if (loc == -1) {
+        return resultCreateGeneralError<u32>(
+            ErrorCode::GAPI_SHADER_UNIFORM_LOCATION,
+            "Failed to get uniform location. name '%s', location: %s",
+            program.name, location
+        );
+    }
+    else {
+        return resultCreateSuccess((u32) loc);
+    }
 }
 
-void gapiDeleteShaderProgram(ShaderProgram* program) {
+void gapiDeleteShader(const Shader shader) {
+    glDeleteShader(shader.id);
+}
+
+void gapiDeleteShaderProgram(const ShaderProgram program) {
+    glDeleteProgram(program.id);
 }
 
 // Shader Uniforms
 
 void gapiSetShaderProgramUniformFloat(ShaderProgram program, u32 location, float val) {
+    glUniform1f(location, val);
 }
 
 void gapiSetShaderProgramUniformInt(ShaderProgram program, u32 location, i32 val) {
+    glUniform1i(location, val);
 }
 
 void gapiSetShaderProgramUniformUInt(ShaderProgram program, u32 location, u32 val) {
+    glUniform1ui(location, val);
 }
 
 void gapiSetShaderProgramUniformTexture2D(ShaderProgram program, u32 location, Texture2D val) {
+    // TODO
 }
 
 void gapiSetShaderProgramUniformVec2f(ShaderProgram program, u32 location, glm::vec2 val) {
+    glUniform2fv(location, 1, glm::value_ptr(val));
 }
 
 void gapiSetShaderProgramUniformVec3f(ShaderProgram program, u32 location, glm::vec3 val) {
+    glUniform3fv(location, 1, glm::value_ptr(val));
 }
 
 void gapiSetShaderProgramUniformVec4f(ShaderProgram program, u32 location, glm::vec4 val) {
+    glUniform4fv(location, 1, glm::value_ptr(val));
 }
 
 void gapiSetShaderProgramUniformMat4f(ShaderProgram program, u32 location, glm::mat4 matrix) {
+    glUniformMatrix4fv(location, 1, GL_TRUE, glm::value_ptr(matrix));
 }

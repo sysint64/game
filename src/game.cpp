@@ -21,6 +21,8 @@ static void onRender();
 
 static void onProgress(const float deltaTime);
 
+static void renderSprite();
+
 bool initGameState() {
     auto bufferResult = allocMemoryBuffer(gigabytes(1));
 
@@ -44,11 +46,11 @@ bool afterInitGameState() {
 
 static void initSprite() {
     gameState.testSprite.indicesBuffer = gapiCreateU32Buffer(&quadIndices[0], quadIndicesCount, false);
-    gameState.testSprite.verticesBuffer = gapiCreateVec2fBuffer(&quadVertices[0], quadVerticesCount, false);
+    gameState.testSprite.verticesBuffer = gapiCreateVec2fBuffer(&centeredQuadVertices[0], quadVerticesCount, false);
     gameState.testSprite.texCoordsBuffer = gapiCreateVec2fBuffer(&quadTexCoords[0], quadTexCoordsCount, false);
     gameState.testSprite.vao = gapiCreateVAO();
 
-    gapiBindVAO(&gameState.testSprite.vao);
+    gapiBindVAO(gameState.testSprite.vao);
     gapiCreateVector2fVAO(&gameState.testSprite.verticesBuffer, 0);
     gapiCreateVector2fVAO(&gameState.testSprite.texCoordsBuffer, 1);
 }
@@ -99,7 +101,9 @@ static void initShaders() {
         }
     );
 
-    const ShaderProgram testShader = resultUnwrap(res);
+    gameState.spriteShader = resultUnwrap(res);
+    const auto locRes = gapiGetShaderUniformLocation(gameState.spriteShader, "MVP");
+    gameState.spriteShaderLocationMVP = resultUnwrap(locRes);
 }
 
 static void initTexture() {
@@ -139,6 +143,21 @@ void gameMainLoop(Platform platform, Window window) {
 
 static void onRender() {
     gapiClear(150.0f/255.0f, 150.0f/255.0f, 150.0f/255.0f);
+    renderSprite();
+}
+
+static void renderSprite() {
+    gapiBindShaderProgram(gameState.spriteShader);
+
+    gapiSetShaderProgramUniformMat4f(
+        gameState.spriteShader,
+        gameState.spriteShaderLocationMVP,
+        gameState.testSpriteMVPMatrix
+    );
+
+    gapiBindVAO(gameState.testSprite.vao);
+    gapiBindIndices(gameState.testSprite.indicesBuffer);
+    gapiRenderIndexedGeometry(4, RenderMode::triangleStrip);
 }
 
 static void onProgress(const float deltaTime) {
@@ -156,7 +175,7 @@ static void updateTestSprite(const float deltaTime) {
         gameState.cameraTransform.viewportSize.y / 2.f
     );
     gameState.testSpriteTransforms.scaling = glm::vec2(430.0f, 600.0f);
-    gameState.testSpriteTransforms.rotation += 0.25f * deltaTime;
+    gameState.testSpriteTransforms.rotation += (0.25f/1000.f) * deltaTime;
 
     gameState.testSpriteModelMatrix = gapiCreate2DModelMatrix(gameState.testSpriteTransforms);
     gameState.testSpriteMVPMatrix = gameState.cameraMatrices.mvpMatrix * gameState.testSpriteModelMatrix;

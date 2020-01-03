@@ -35,6 +35,8 @@ struct GApiContext;
 #include "assets.hpp"
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 struct CameraMatrices {
     glm::mat4 viewMatrix;
@@ -50,7 +52,8 @@ struct OthroCameraTransforms {
 };
 
 enum class RenderMode {
-    triangles
+    triangles,
+    triangleStrip,
 };
 
 enum class ShaderType {
@@ -110,29 +113,31 @@ void gapiDeleteBuffer(GeometryBuffer* buffer);
 
 GeometryVAO gapiCreateVAO();
 
-void gapiBindVAO(GeometryVAO* vao);
+void gapiBindVAO(GeometryVAO vao);
 
 void gapiCreateVector2fVAO(GeometryBuffer* buffer, u32 location);
 
 void gapiCreateVector3fVAO(GeometryBuffer* buffer, u32 location);
 
-void gapiBindIndices(GeometryBuffer* indices);
+void gapiBindIndices(GeometryBuffer indices);
 
 void gapiRenderIndexedGeometry(uint indicesLength, RenderMode renderMode = RenderMode::triangles);
 
 // Shaders
 
-Result<Shader> gapiCreateShader(const char* name, const ShaderType shaderType, AssetData data);
+Result<Shader> gapiCreateShader(const char* name, ShaderType shaderType, AssetData data);
 
 Result<ShaderProgram> gapiCreateShaderProgram(const char* name, StaticArray<Shader> shaders);
 
-void gapiBindShaderProgram(ShaderProgram* program);
+void gapiBindShaderProgram(ShaderProgram program);
 
 void gapiUnbindShaderProgram();
 
-u32 gapiGetShaderUniformLocation(const ShaderProgram program, const char* location);
+Result<u32> gapiGetShaderUniformLocation(ShaderProgram program, const char* location);
 
-void gapiDeleteShaderProgram(ShaderProgram* program);
+void gapiDeleteShader(Shader shader);
+
+void gapiDeleteShaderProgram(ShaderProgram program);
 
 // Shader Uniforms
 
@@ -154,7 +159,7 @@ void gapiSetShaderProgramUniformMat4f(ShaderProgram program, u32 location, glm::
 
 // Texture
 
-Texture2D gapiCreateTexture2D(const AssetData data, const Texture2DParameters params);
+Texture2D gapiCreateTexture2D(AssetData data, Texture2DParameters params);
 
 //
 

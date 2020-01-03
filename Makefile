@@ -1,7 +1,7 @@
 BUILDDIR = build
 LDFLAGS = -ljpeg -lpng
 CXX = clang++
-CXXFLAGS = -I. -Ilib/imgui/ -Ilib/imgui/examples/ -Wall -std=c++11 -g
+CXXFLAGS = -I. -Ilib/imgui/ -Ilib/imgui/examples/ -Wall -std=c++11 -g -DVALIDATE
 SANITIZE = false
 
 ifeq ($(SANITIZE), true)

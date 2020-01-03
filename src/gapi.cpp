@@ -21,7 +21,7 @@ CameraMatrices gapiCreateOrthoCameraMatrices(const OthroCameraTransforms transfo
             glm::vec3(transforms.zoom, transforms.zoom, 1.0f)
         );
     } else {
-        cameraMatrices.modelMatrix = glm::mat4();
+        cameraMatrices.modelMatrix = glm::mat4(1);
     }
 
     cameraMatrices.mvpMatrix =
@@ -34,18 +34,18 @@ CameraMatrices gapiCreateOrthoCameraMatrices(const OthroCameraTransforms transfo
 
 glm::mat4 gapiCreate2DModelMatrix(Transforms2D transforms) {
     const auto translateMatrix = glm::translate(
-        glm::mat4(),
+        glm::mat4(1),
         glm::vec3(transforms.position, 0.0f)
     );
 
     const auto rotateMatrix = glm::rotate(
-        glm::mat4(),
+        glm::mat4(1),
         transforms.rotation,
         glm::vec3(0.0f, 0.0f, 1.0f)
     );
 
     const auto scaleMatrix = glm::scale(
-        glm::mat4(),
+        glm::mat4(1),
         glm::vec3(transforms.scaling, 1.0f)
     );
 

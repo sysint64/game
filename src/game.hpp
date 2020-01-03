@@ -33,8 +33,9 @@ struct GameState {
     QuadGeometry testSprite;
     Transforms2D testSpriteTransforms;
     ShaderProgram spriteShader;
+    u32 spriteShaderLocationMVP;
+    // u32 spriteShaderLocationColor;
     CameraMatrices cameraMatrices;
-    ShaderProgram testShader;
     Texture2D spriteTexture;
     glm::mat4 testSpriteModelMatrix;
     glm::mat4 testSpriteMVPMatrix;
