@@ -1,6 +1,6 @@
 #include "game.hpp"
 
-#include "stdio.h"
+#include <stdio.h>
 #include "platform.hpp"
 #include "memory.hpp"
 #include "assets.hpp"

@@ -1,5 +1,5 @@
 #include "platform.hpp"
-#include "jpeglib.h"
+#include <jpeglib.h>
 #include <setjmp.h>
 
 static Result<AssetData> loadTexture(RegionMemoryBuffer* memory, const char* assetName);
@@ -185,8 +185,6 @@ static Result<AssetData> loadShader(RegionMemoryBuffer* memory, const char* asse
         );
     }
 
-    char c;
-
     fseek(file, 0L, SEEK_END);
     u64 size = ftell(file);
     rewind(file);
@@ -200,6 +198,7 @@ static Result<AssetData> loadShader(RegionMemoryBuffer* memory, const char* asse
 
     u8* data = resultGetPayload(dataResult);
     size_t offset = 0;
+    char c;
 
     while ((c = getc(file)) != EOF) {
         data[offset] = c;
