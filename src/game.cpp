@@ -53,13 +53,6 @@ static void initSprite() {
     gapiCreateVector2fVAO(&gameState.testSprite.texCoordsBuffer, 1);
 }
 
-Shader shadersMemory[100000];
-size_t shadersMemoryCursor = 0;
-
-#define PUSH_SHADER(shader) \
-    shadersMemory[shadersMemoryCursor] = shader; \
-    shadersMemoryCursor += 1;
-
 static void initShaders() {
     const Result<AssetData> fragmentShaderResult = platformLoadAssetData(
         &gameState.memory.assetsBuffer,
@@ -90,14 +83,15 @@ static void initShaders() {
     const Shader vertexShader = resultUnwrap(vertexShaderResult2);
     const Shader fragmentShader = resultUnwrap(fragmentShaderResult2);
 
-    PUSH_SHADER(vertexShader);
-    PUSH_SHADER(fragmentShader);
+    Shader shaders[2];
+    shaders[0] = vertexShader;
+    shaders[1] = fragmentShader;
 
     const auto res = gapiCreateShaderProgram(
         "test_shader_program",
         StaticArray<Shader>{
             .size = 2,
-            .items = shadersMemory
+            .items = shaders
         }
     );
 
