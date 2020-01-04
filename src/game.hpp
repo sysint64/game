@@ -2,18 +2,12 @@
 
 #include "memory.hpp"
 #include "gapi.hpp"
+#include "system_demo.hpp"
 
 enum class Room {
     titleScreen,
     mainMenu,
     debugLevel,
-};
-
-struct QuadGeometry {
-    GeometryBuffer indicesBuffer;
-    GeometryBuffer verticesBuffer;
-    GeometryBuffer texCoordsBuffer;
-    GeometryVAO vao;
 };
 
 struct GameState {
@@ -29,22 +23,7 @@ struct GameState {
     RegionMemoryBuffer rootMemoryBuffer;
     GameMemory memory;
     Room room = Room::debugLevel;
-
-    QuadGeometry testSprite;
-    Transforms2D testSpriteTransforms;
-    ShaderProgram spriteShader;
-    u32 spriteShaderLocationMVP;
-    u32 spriteShaderLocationTexture;
-    CameraMatrices cameraMatrices;
-    Texture2D spriteTexture;
-    glm::mat4 testSpriteModelMatrix;
-    glm::mat4 testSpriteMVPMatrix;
-
-    OthroCameraTransforms cameraTransform = {
-        .viewportSize = glm::vec2(1024, 768),
-        .position = glm::vec2(0, 0),
-        .zoom = 1.f
-    };
+    DemoSystem demoSystem;
 };
 
 static GameState gameState;
