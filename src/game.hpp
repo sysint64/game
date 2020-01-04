@@ -26,8 +26,8 @@ struct GameState {
     int frames = 0;
     int fps = 0;
 
-    MemoryBuffer rootMemoryBuffer;
-    Memory totalMemory;
+    RegionMemoryBuffer rootMemoryBuffer;
+    GameMemory memory;
     Room room = Room::debugLevel;
 
     QuadGeometry testSprite;

@@ -24,15 +24,13 @@ static void onProgress(const float deltaTime);
 static void renderSprite();
 
 bool initGameState() {
-    auto bufferResult = allocMemoryBuffer(gigabytes(1));
+    auto bufferResult = createRegionMemoryBuffer(megabytes(75));
+    gameState.rootMemoryBuffer = resultUnwrap(bufferResult);
 
-    if (resultHasError(bufferResult)) {
-        puts(bufferResult.error.message);
-        return false;
-    }
-
-    gameState.rootMemoryBuffer = bufferResult.payload;
-    gameState.totalMemory.currentBuffer = &gameState.rootMemoryBuffer;
+    regionMemoryBufferAddRegion(&gameState.rootMemoryBuffer, &gameState.memory.eternityBuffer, megabytes(10));
+    regionMemoryBufferAddRegion(&gameState.rootMemoryBuffer, &gameState.memory.assetsBuffer, megabytes(40));
+    regionMemoryBufferAddRegion(&gameState.rootMemoryBuffer, &gameState.memory.frameBuffer, megabytes(20));
+    regionMemoryBufferAddRegion(&gameState.rootMemoryBuffer, &gameState.memory.tmpBuffer, megabytes(5));
 
     return true;
 }
@@ -64,11 +62,13 @@ size_t shadersMemoryCursor = 0;
 
 static void initShaders() {
     const Result<AssetData> fragmentShaderResult = platformLoadAssetData(
+        &gameState.memory.assetsBuffer,
         AssetType::shader,
         "fragment_texture.glsl"
     );
 
     const Result<AssetData> vertexShaderResult = platformLoadAssetData(
+        &gameState.memory.assetsBuffer,
         AssetType::shader,
         "vertex_transform.glsl"
     );
@@ -112,6 +112,7 @@ static void initShaders() {
 
 static void initTexture() {
     const Result<AssetData> testTextureResult = platformLoadAssetData(
+        &gameState.memory.assetsBuffer,
         AssetType::texture,
         "test.jpg"
     );

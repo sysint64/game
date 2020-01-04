@@ -2,18 +2,22 @@
 #include "jpeglib.h"
 #include <setjmp.h>
 
-static Result<AssetData> loadTexture(const char* assetName);
+static Result<AssetData> loadTexture(RegionMemoryBuffer* memory, const char* assetName);
 
-static Result<AssetData> loadJPEGTexture(const char* assetName);
+static Result<AssetData> loadJPEGTexture(RegionMemoryBuffer* memory, const char* assetName);
 
-static Result<AssetData> loadPNGTexture(const char* assetName);
+static Result<AssetData> loadPNGTexture(RegionMemoryBuffer* memory, const char* assetName);
 
-static Result<AssetData> loadShader(const char* assetName);
+static Result<AssetData> loadShader(RegionMemoryBuffer* memory, const char* assetName);
 
-Result<AssetData> platformLoadAssetData(const AssetType assetType, const char* assetName) {
+Result<AssetData> platformLoadAssetData(
+    RegionMemoryBuffer* memory,
+    const AssetType assetType,
+    const char* assetName
+) {
     switch (assetType) {
         case texture:
-            return loadTexture(assetName);
+            return loadTexture(memory, assetName);
 
         case sfx:
             return resultCreateGeneralError<AssetData>(
@@ -28,7 +32,7 @@ Result<AssetData> platformLoadAssetData(const AssetType assetType, const char* a
             );
 
         case shader:
-            return loadShader(assetName);
+            return loadShader(memory, assetName);
 
         case font:
             return resultCreateGeneralError<AssetData>(
@@ -44,7 +48,7 @@ Result<AssetData> platformLoadAssetData(const AssetType assetType, const char* a
     }
 }
 
-static Result<AssetData> loadTexture(const char* assetName) {
+static Result<AssetData> loadTexture(RegionMemoryBuffer* memory, const char* assetName) {
     char *dot = strrchr(assetName, '.');
 
     if (!dot) {
@@ -55,10 +59,10 @@ static Result<AssetData> loadTexture(const char* assetName) {
     }
 
     if (strcmp(dot, ".jpeg") == 0 || strcmp(dot, ".jpg") == 0) {
-        return loadJPEGTexture(assetName);
+        return loadJPEGTexture(memory, assetName);
     }
     else if (strcmp(dot, ".png") == 0) {
-        return loadPNGTexture(assetName);
+        return loadPNGTexture(memory, assetName);
     }
     else {
         return resultCreateGeneralError<AssetData>(
@@ -82,18 +86,7 @@ METHODDEF(void) jpegErrorExit (j_common_ptr cinfo) {
     longjmp(err->setJmpBuffer, 1);
 }
 
-u8 textureMemory[1000000000] { 0 };
-size_t textureMemoryCursor = 0;
-
-// TODO(Andrey): Memory managment
-static Result<AssetData> loadJPEGTexture(const char* assetName) {
-    AssetData assetData;
-
-    jpeg_decompress_struct cinfo;
-    JSAMPARRAY buffer;
-    int rowStride;
-    JpegErrorMgr jerr;
-
+static Result<AssetData> loadJPEGTexture(RegionMemoryBuffer* memory, const char* assetName) {
     char path[256] { 0 };
     platformBuildPath(&path[0], "assets", "textures", assetName);
 
@@ -105,6 +98,9 @@ static Result<AssetData> loadJPEGTexture(const char* assetName) {
             "Can't open asset: %s", &path[0]
         );
     }
+
+    jpeg_decompress_struct cinfo;
+    JpegErrorMgr jerr;
 
     cinfo.err = jpeg_std_error(&jerr.pub);
     jerr.pub.error_exit = jpegErrorExit;
@@ -124,48 +120,59 @@ static Result<AssetData> loadJPEGTexture(const char* assetName) {
     jpeg_read_header(&cinfo, 0);
 
     jpeg_start_decompress(&cinfo);
-    rowStride = cinfo.output_width * cinfo.output_components;
-    buffer = (*cinfo.mem->alloc_sarray) ((j_common_ptr) &cinfo, JPOOL_IMAGE, rowStride, 1);
 
-    const size_t headerMemoryCursor = textureMemoryCursor;
-    assetData.size = sizeof(TextureHeader);
-    textureMemoryCursor += assetData.size;
+    const u32 width = cinfo.output_width;
+    const u32 height = cinfo.output_height;
+    const u32 depth = cinfo.output_components;
+
+    const u64 rowSize = width * depth;
+    JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray) ((j_common_ptr) &cinfo, JPOOL_IMAGE, rowSize, 1);
+
+    const u64 textureSize = width * height * depth;
+    const u64 size = sizeof(TextureHeader) + textureSize;
+    const auto dataResult = regionMemoryBufferAlloc(memory, size);
+
+    if (resultHasError(dataResult)) {
+        return switchError<AssetData>(dataResult);
+    }
+
+    u8* data = resultGetPayload(dataResult);
+
+    const TextureHeader textureHeader {
+        .width = width,
+        .height = height,
+        .format = TextureFormat::rgb
+    };
+
+    memcpy(data, &textureHeader, sizeof(TextureHeader));
+    u8* imageData = data + sizeof(TextureHeader);
 
     while (cinfo.output_scanline < cinfo.output_height) {
         jpeg_read_scanlines(&cinfo, buffer, 1);
-        memcpy(&textureMemory[textureMemoryCursor], buffer[0], rowStride);
-        textureMemoryCursor += rowStride;
+        memcpy(imageData, buffer[0], rowSize);
+        imageData += rowSize;
     }
 
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
     fclose(infile);
 
-    const TextureHeader textureHeader {
-        .width = cinfo.output_width,
-        .height = cinfo.output_height,
-        .format = TextureFormat::rgb
+    AssetData assetData = {
+        .size = size,
+        .data = data
     };
-
-    memcpy(&textureMemory[headerMemoryCursor], &textureHeader, sizeof(TextureHeader));
-    assetData.data = &textureMemory[headerMemoryCursor];
-    assetData.size = textureMemoryCursor - headerMemoryCursor;
 
     return resultCreateSuccess(assetData);
 }
 
-static Result<AssetData> loadPNGTexture(const char* assetName) {
+static Result<AssetData> loadPNGTexture(RegionMemoryBuffer* memory, const char* assetName) {
     return resultCreateGeneralError<AssetData>(
         ErrorCode::LOAD_ASSET,
         "PNG Not implemented yet"
     );
 }
 
-char shaderMemory[1000000] { 0 };
-size_t shaderMemoryCursor = 0;
-
-// TODO(Andrey): Memory managment
-static Result<AssetData> loadShader(const char* assetName) {
+static Result<AssetData> loadShader(RegionMemoryBuffer* memory, const char* assetName) {
     char path[256] { 0 };
     platformBuildPath(&path[0], "assets", "shaders", assetName);
 
@@ -179,21 +186,32 @@ static Result<AssetData> loadShader(const char* assetName) {
     }
 
     char c;
-    size_t start = shaderMemoryCursor;
 
-    while ((c = getc(file)) != EOF) {
-        shaderMemory[shaderMemoryCursor] = c;
-        shaderMemoryCursor += 1;
+    fseek(file, 0L, SEEK_END);
+    u64 size = ftell(file);
+    rewind(file);
+
+    // NOTE(Andrey): +1 for terminate symbol \0
+    Result<u8*> dataResult = regionMemoryBufferAlloc(memory, size + 1);
+
+    if (resultHasError(dataResult)) {
+        return switchError<AssetData>(dataResult);
     }
 
-    shaderMemory[shaderMemoryCursor] = 0;
-    shaderMemoryCursor += 1;
+    u8* data = resultGetPayload(dataResult);
+    size_t offset = 0;
 
+    while ((c = getc(file)) != EOF) {
+        data[offset] = c;
+        offset += 1;
+    }
+
+    data[offset] = 0;
     fclose(file);
 
     AssetData assetData = {
-        .size = shaderMemoryCursor - start,
-        .data = (u8*) &shaderMemory[start]
+        .size = size,
+        .data = data
     };
 
     return resultCreateSuccess(assetData);

@@ -16,6 +16,7 @@ struct Window;
 
 #include "game_types.hpp"
 #include "assets.hpp"
+#include "memory.hpp"
 
 Result<Platform> platformInit();
 
@@ -31,9 +32,13 @@ void platformDestroyWindow(Window window);
 
 void platformShutdown(Platform platform);
 
-void* platformAlloc(MemoryIndex size);
+u8* platformAlloc(MemoryIndex size);
 
-Result<AssetData> platformLoadAssetData(const AssetType assetType, const char* assetName);
+Result<AssetData> platformLoadAssetData(
+    RegionMemoryBuffer* memory,
+    const AssetType assetType,
+    const char* assetName
+);
 
 const char platformPrefferedPathSeparator =
 #ifdef _WIN32

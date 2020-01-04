@@ -1,47 +1,33 @@
 #pragma once
 
+#include <cassert>
 #include "game_types.hpp"
-#include "platform.hpp"
-#include "errors.hpp"
 
-struct MemoryBuffer {
-    void* base;
+struct RegionMemoryBuffer {
+    u8* base;
     u64 size;
-    umm used;
-    MemoryBuffer* prev;
+    size_t offset;
 };
 
-struct Memory {
-    MemoryBuffer* currentBuffer;
+struct StackMemoryBuffer {
+    u8* base;
+    u64 size;
+    size_t offset;
 };
 
-struct TemporaryMemory {
-    Memory* arena;
-    MemoryBuffer* block;
-    umm used;
+struct GameMemory {
+    RegionMemoryBuffer eternityBuffer;
+    RegionMemoryBuffer frameBuffer;
+    RegionMemoryBuffer assetsBuffer;
+    RegionMemoryBuffer tmpBuffer;
 };
 
-inline void pushBufferToMemory(Memory* memory, MemoryBuffer* buffer) {
-    buffer->prev = memory->currentBuffer;
-    memory->currentBuffer = buffer;
-}
+Result<RegionMemoryBuffer> createRegionMemoryBuffer(u64 size);
 
-inline Result<MemoryBuffer> allocMemoryBuffer(u64 size) {
-    void* base = platformAlloc(size);
+Result<StackMemoryBuffer> createStackMemoryBuffer(RegionMemoryBuffer* root, u64 size);
 
-    if (base) {
-        auto buffer = MemoryBuffer {
-            .base = base,
-            .size = size,
-            .used = 0,
-            .prev = nullptr,
-        };
-        return resultCreateSuccess<MemoryBuffer>(buffer);
-    }
-    else {
-        return resultCreateGeneralError<MemoryBuffer>(
-            ErrorCode::ALLOCATION_ERROR,
-            "platformAlloc has failed"
-        );
-    }
-}
+void regionMemoryBufferAddRegion(RegionMemoryBuffer* where, RegionMemoryBuffer* buffer, u64 size);
+
+Result<u8*> regionMemoryBufferAlloc(RegionMemoryBuffer* buffer, u64 size);
+
+void regionMemoryBufferFree(RegionMemoryBuffer* buffer);
