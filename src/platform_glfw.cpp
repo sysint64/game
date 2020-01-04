@@ -61,15 +61,12 @@ Result<Window> platformCreateWindow(Platform platform) {
 }
 
 bool platformEventLoop(Platform platform, Window window) {
-    gapiClear(0, 0, 0);
-    gapiSwapWindow(platform, window);
     glfwPollEvents();
-
     return !glfwWindowShouldClose(window.glfwWindow);
 }
 
 float platformGetTicks() {
-    return (float) glfwGetTime();
+    return (float) glfwGetTime() * 1000.0f;
 }
 
 void platformSwapWindow(Platform platform) {
