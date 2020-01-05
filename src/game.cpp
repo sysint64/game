@@ -6,53 +6,46 @@
 #include "assets.hpp"
 #include "gapi.hpp"
 
-static void onRender();
-
-static void onProgress(const float deltaTime);
-
-bool initGameState() {
+void Game::init() {
     auto bufferResult = createRegionMemoryBuffer(megabytes(75));
-    gameState.rootMemoryBuffer = resultUnwrap(bufferResult);
+    rootMemoryBuffer = resultUnwrap(bufferResult);
 
-    regionMemoryBufferAddRegion(&gameState.rootMemoryBuffer, &gameState.memory.eternityBuffer, megabytes(10));
-    regionMemoryBufferAddRegion(&gameState.rootMemoryBuffer, &gameState.memory.assetsBuffer, megabytes(40));
-    regionMemoryBufferAddRegion(&gameState.rootMemoryBuffer, &gameState.memory.frameBuffer, megabytes(20));
-    regionMemoryBufferAddRegion(&gameState.rootMemoryBuffer, &gameState.memory.tmpBuffer, megabytes(5));
-
-    return true;
+    regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.eternityBuffer, megabytes(10));
+    regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.assetsBuffer, megabytes(40));
+    regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.frameBuffer, megabytes(20));
+    regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.tmpBuffer, megabytes(5));
 }
 
-bool afterInitGameState() {
-    gameState.demoSystem.init(&gameState.memory);
-    return true;
+void Game::afterInit() {
+    demoSystem.init(&memory);
 }
 
-void gameMainLoop(Platform platform, Window window) {
-    gameState.currentTime = platformGetTicks();
-    gameState.deltaTime = gameState.lastTime - gameState.currentTime;
+void Game::gameMainLoop(Platform platform, Window window) {
+    currentTime = platformGetTicks();
+    deltaTime = lastTime - currentTime;
 
-    if (gameState.currentTime >= gameState.lastTime + gameState.partTime) {
-        onProgress(gameState.deltaTime);
+    if (currentTime >= lastTime + partTime) {
+        onProgress(deltaTime);
         onRender();
-        gameState.frames += 1;
-        gameState.lastTime = gameState.currentTime;
+        frames += 1;
+        lastTime = currentTime;
         gapiSwapWindow(platform, window);
     }
 
-    if (gameState.currentTime >= gameState.frameTime + 1000.0) {
-        gameState.frameTime = gameState.currentTime;
-        gameState.fps = gameState.frames;
-        gameState.frames = 1;
+    if (currentTime >= frameTime + 1000.0) {
+        frameTime = currentTime;
+        fps = frames;
+        frames = 1;
 
-        printf("FPS: %d\n", gameState.fps);
+        printf("FPS: %d\n", fps);
     }
 }
 
-static void onRender() {
+void Game::onRender() {
     gapiClear(150.0f/255.0f, 150.0f/255.0f, 150.0f/255.0f);
-    gameState.demoSystem.onRender();
+    demoSystem.onRender();
 }
 
-static void onProgress(const float deltaTime) {
-    gameState.demoSystem.onProgress(deltaTime);
+void Game::onProgress(const float deltaTime) {
+    demoSystem.onProgress(deltaTime);
 }

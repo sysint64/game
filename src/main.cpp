@@ -14,40 +14,37 @@
 #endif
 
 int main() {
-    if (initGameState()) {
-        auto platformInitResult = platformInit();
+    Game game;
 
-        if (resultIsSuccess(platformInitResult)) {
-            auto platform = resultGetPayload(platformInitResult);
-            auto createWindowResult = platformCreateWindow(platform);
+    game.init();
+    auto platformInitResult = platformInit();
 
-            if (resultIsSuccess(createWindowResult)) {
-                auto window = resultGetPayload(createWindowResult);
-                bool running = true;
-                afterInitGameState();
+    if (resultIsSuccess(platformInitResult)) {
+        auto platform = resultGetPayload(platformInitResult);
+        auto createWindowResult = platformCreateWindow(platform);
 
-                while (running) {
-                    running = platformEventLoop(platform, window);
-                    gameMainLoop(platform, window);
-                }
+        if (resultIsSuccess(createWindowResult)) {
+            auto window = resultGetPayload(createWindowResult);
+            bool running = true;
+            game.afterInit();
 
-                platformDestroyWindow(window);
-            }
-            else {
-                // TODO(Andrey): log
-                puts(createWindowResult.error.message);
+            while (running) {
+                running = platformEventLoop(platform, window);
+                game.gameMainLoop(platform, window);
             }
 
-            platformShutdown(platform);
+            platformDestroyWindow(window);
         }
         else {
             // TODO(Andrey): log
-            puts(platformInitResult.error.message);
+            puts(createWindowResult.error.message);
         }
+
+        platformShutdown(platform);
     }
     else {
         // TODO(Andrey): log
-        puts("Game state initialization error");
+        puts(platformInitResult.error.message);
     }
 
     return 0;
