@@ -5,8 +5,3 @@ void Storage::init(GameMemory* memory) {
     mvpMatrices.init(&memory->componentsBuffer, 100);
     cameras.init(&memory->componentsBuffer, 100);
 }
-
-void Storage::removeEntity(u64 entity) {
-    mvpMatrices.removeByKey(entity);
-    cameras.removeByKey(entity);
-}
