@@ -34,18 +34,25 @@ Result<StackMemoryBuffer> createStackMemoryBuffer(RegionMemoryBuffer* root, u64 
     return resultCreateSuccess(buffer);
 }
 
-Result<ArenaMemoryBuffer> createArenaMemoryBuffer(RegionMemoryBuffer* where, u64 size, u64 chunkSize) {
-    Result<u8*> baseResult = regionMemoryBufferAlloc(where, size);
+Result<ArenaMemoryBuffer> createArenaMemoryBuffer(RegionMemoryBuffer* where, u64 count, u64 chunkSize) {
+    const u64 fullChunkSize = chunkSize + sizeof(Arena);
+    Result<u8*> baseResult = regionMemoryBufferAlloc(where, count * fullChunkSize);
 
     if (resultHasError(baseResult)) {
         return switchError<ArenaMemoryBuffer>(baseResult);
     }
     else {
-        ArenaMemoryBuffer buffer;
         u8* base = resultUnwrap(baseResult);
-        buffer.size = size;
-        buffer.chunkSize = chunkSize;
-        buffer.base = base;
+        ArenaMemoryBuffer buffer;
+        buffer.head = (Arena*) base;
+        Arena* current = buffer.head;
+
+        for (size_t i = 1; i < count; ++i) {
+            current->next = (Arena*) (base + (i * fullChunkSize));
+            current = current->next;
+        }
+
+        current->next = nullptr;
         return resultCreateSuccess(buffer);
     }
 }
@@ -61,6 +68,8 @@ void regionMemoryBufferAddRegion(RegionMemoryBuffer* where, RegionMemoryBuffer* 
 }
 
 Result<u8*> regionMemoryBufferAlloc(RegionMemoryBuffer* buffer, u64 size) {
+    assert(buffer != nullptr);
+
     if (buffer->offset + size > buffer->size) {
         return resultCreateGeneralError<u8*>(
             ErrorCode::ALLOCATION_ERROR,
@@ -76,4 +85,27 @@ Result<u8*> regionMemoryBufferAlloc(RegionMemoryBuffer* buffer, u64 size) {
 
 void regionMemoryBufferFree(RegionMemoryBuffer* buffer) {
     buffer->offset = 0;
+}
+
+Result<Arena*> arenaMemoryBufferAlloc(ArenaMemoryBuffer* buffer) {
+    assert(buffer != nullptr);
+
+    if (buffer->head == nullptr) {
+        return resultCreateGeneralError<Arena*>(
+            ErrorCode::ALLOCATION_ERROR,
+            "Out of memory"
+        );
+    }
+    else {
+        Arena* arena = buffer->head->next;
+        return resultCreateSuccess(arena);
+    }
+}
+
+void arenaMemoryBufferFree(ArenaMemoryBuffer* buffer, Arena* arena) {
+    assert(buffer != nullptr);
+    assert(arena != nullptr);
+
+    arena->next = buffer->head;
+    buffer->head = arena;
 }

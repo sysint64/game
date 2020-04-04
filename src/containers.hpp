@@ -27,8 +27,8 @@ inline StaticArray<T> createStaticArray(u64 size, T* items) {
 
 template<typename T>
 struct DynamicArray {
-    void init(RegionMemoryBuffer* buffer, u64 size) {
-        auto baseResult = regionMemoryBufferAlloc(buffer, size);
+    void init(RegionMemoryBuffer* buffer, u64 count) {
+        auto baseResult = regionMemoryBufferAlloc(buffer, count * sizeof(T));
         base = resultUnwrap(baseResult);
         count = 0;
         offset = 0;
@@ -56,20 +56,22 @@ private:
 
 template<typename T>
 struct SparseArray {
-    ArenaMemoryBuffer memory;
-    size_t size;
-    u64* keys;
-    T* items;
+    ArenaMemoryBuffer itemsMemory;
+    ArenaMemoryBuffer keysMemory;
 
-    void init(RegionMemoryBuffer* buffer, u64 size) {
-        auto bufferResult = createArenaMemoryBuffer(buffer, size, sizeof(T));
-        memory = resultUnwrap(bufferResult);
+    void init(RegionMemoryBuffer* buffer, u64 count) {
+        auto bufferResult = createArenaMemoryBuffer(buffer, count, sizeof(T));
+        itemsMemory = resultUnwrap(bufferResult);
+
+        bufferResult = createArenaMemoryBuffer(buffer, count, sizeof(u64));
+        keysMemory = resultUnwrap(bufferResult);
     }
 
     void removeByKey(i64 key) {
     }
 
     void put(u64 key, T value) {
+
     }
 };
 
