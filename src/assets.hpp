@@ -8,6 +8,7 @@ enum AssetType {
     music,
     shader,
     font,
+    level,
 };
 
 struct AssetData {

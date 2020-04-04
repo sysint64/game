@@ -5,6 +5,7 @@
 #include "memory.hpp"
 #include "assets.hpp"
 #include "gapi.hpp"
+#include "loader_tmx.hpp"
 
 void Game::init() {
     auto bufferResult = createRegionMemoryBuffer(megabytes(75));
@@ -18,6 +19,7 @@ void Game::init() {
 
 void Game::afterInit() {
     demoSystem.init(&memory);
+    renderSystem.init(&memory, &storage);
 }
 
 void Game::gameMainLoop(Platform platform, Window window) {
@@ -44,6 +46,7 @@ void Game::gameMainLoop(Platform platform, Window window) {
 void Game::onRender() {
     gapiClear(150.0f/255.0f, 150.0f/255.0f, 150.0f/255.0f);
     demoSystem.onRender();
+    renderSystem.onRender();
 }
 
 void Game::onProgress(const float deltaTime) {

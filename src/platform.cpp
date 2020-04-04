@@ -1,6 +1,7 @@
 #include "platform.hpp"
 #include <jpeglib.h>
 #include <setjmp.h>
+#include <tmx.h>
 
 static Result<AssetData> loadTexture(RegionMemoryBuffer* memory, const char* assetName);
 
@@ -9,6 +10,8 @@ static Result<AssetData> loadJPEGTexture(RegionMemoryBuffer* memory, const char*
 static Result<AssetData> loadPNGTexture(RegionMemoryBuffer* memory, const char* assetName);
 
 static Result<AssetData> loadShader(RegionMemoryBuffer* memory, const char* assetName);
+
+static Result<AssetData> loadLevel(RegionMemoryBuffer* memory, const char* assetName);
 
 Result<AssetData> platformLoadAssetData(
     RegionMemoryBuffer* memory,
@@ -39,6 +42,9 @@ Result<AssetData> platformLoadAssetData(
                 ErrorCode::LOAD_ASSET,
                 "Not implemented yet"
             );
+
+        case level:
+            return loadLevel(memory, assetName);
 
         default:
             return resultCreateGeneralError<AssetData>(
@@ -214,4 +220,28 @@ static Result<AssetData> loadShader(RegionMemoryBuffer* memory, const char* asse
     };
 
     return resultCreateSuccess(assetData);
+}
+
+static Result<AssetData> loadLevel(RegionMemoryBuffer* memory, const char* assetName) {
+    return resultCreateGeneralError<AssetData>(
+        ErrorCode::LOAD_ASSET,
+        "Level loading error"
+    );
+    // tmx_map *map = tmx_load("path/map.tmx");
+
+    // if (!map) {
+    //     tmx_perror("tmx_load");
+
+    //     return resultCreateGeneralError<AssetData>(
+    //         ErrorCode::LOAD_ASSET,
+    //         "Level loading error"
+    //     );
+    // }
+
+    // tmx_map_free(map);
+
+    // return resultCreateGeneralError<AssetData>(
+    //     ErrorCode::LOAD_ASSET,
+    //     "Level loading Not implemented yet"
+    // );
 }

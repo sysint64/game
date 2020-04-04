@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="40" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="tileset1" tilewidth="32" tileheight="32" spacing="1" margin="1">
+  <image source="../tiles/tileset1.png" width="166" height="166"/>
+ </tileset>
+ <layer name="bg" width="100" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztWl2vIjEInbc17tWs14fx///Sq4lNSAP08NWZWe8D0dHSAocCZXpeluX8S4eji3EcOt46/wwd9kQnpy5/nHg0vuuTvgD6t1M8Lo51PDzW8c2ufyfozeE64pX8TaPbovvIudPXgkfvx3vwrVlyILwcrhwfN8661z0YSuPXJ90n4tD8uhqPbB+oWoPurfsbjypMtNizVzy0mIbkvMj+WBlC7eqJ33vEo9ejjUHjXT/PFvkgigUl6nNILq/2AW1MlP8I5JH/Qqh6rUp9PPU0RzfyPXKOmIVHywla7f6dhNuIl8YWT/02WtNqE+taEo8Fj8x9NIqpW8QrDQ9J3mw5s/CQ8rY3l1n0RNd47d3Hm74Ha1ps0tcB9/cannr7NZ+23yO+YB2P2NWL74lgsb4/s/CgzytZ5yGsk2mzT6Gt7JJZx3AxQKPMev+oePT1gKXPqcnYasWKvqm39kTrLqnW0WLjHnrsEi+CReSMqp31K8i6bzXcJay8fewRHhX7ol+Hy5mjOaqxQ+cf2dvyvkTqSY2wiNpCw6PVL57c03haPfpY6nryqP8jOVnKy5Q3a18g/UYOj8iatO5dBRmyKIKHhgXlrczdIzx+iacqLBD7HwmfGb3axhM9P/S1NypTpI6dTdRvR/cOpPPHyM7WOxTSu3Vpnv73PZ8bR0R1R+8kWeZE5kVJw6Myx1bji/aCpf1iPV/OwIM+c3JqvC890fxW9a4BmQPVfxZJ94Ykea4EE+nu2JVgMaoXt8ADiV/WfoRXttH5Uvqd2tRyvxDpb6J3ydD3U5a12nMvp+c9U9RX6DwoThX0P8SrDF/JlOfTCbFX5H5B5r2wT6CI3qO9pOXzbLlovZltozZ39N4QqveWPTgJV61v4M2D2v6W7iDSehutFzLtNes9UQaO3vEIntz9tOa7lXc1LP2j8+CT87Xb4osh2r7lzsLRnihSLx01p3nu2qC6n5j/onuam5OLl0hsPwnfUTmyseh188YRjQ+d06LfUfYHmk85uTm/89pnT7SXHBulH2fDopM=
+  </data>
+ </layer>
+ <layer name="walls" width="100" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztWI3KgzAMLPgQ+v5POsY+wa+kNT+XJkoOynCzuZhrm3Nba22rkW5wgLhPwvcURGhx8lrve6se1HfSukfUpvQoPbyBeh5LbQ4jp+a8zIoMeuxNp0nPWXr8j6OJ9dVh7z61nOf10cXT7r8IoPVY6aEjPCEizh0HKs6b9eDch6gl6jkieuoqPukeWsU1m7tai1WcmvjanHbDXCqHt+mBWqtcHEbOnh9dm/1veHNSvg7VC6R5oHsQChy/auW8xr/yIJ9D4iMOxj0cviuvNKeV/ggZzwOUR9LOz6xHZI25oHK0+LrotTVCxpx6zNYx9d0T9jqFbPlQmOVoOb9mPSoCT9eC8/vd3H6+9n/bHqfXkuSSHdy+Z/FZHnpI/6fl5L63+3cbLTgxPTxhX39vD6XtX9H5rOqxI39FrbuMvf5tGO0Nr3OgMMfd/pD4uIId3v1jxJfpzM6E0f6wYrS3rLGzaOK1ZkZ7wwovPVAxPPkt+XnsD07vsQK1ZqSehcurzW/UP7T+6vqO5r2OLfG175Ir9OivuedhhvewlVxUvWa10WDUPzh1sELaD73y8OBD5cXpH2gupD9BImJ/UHFKjx8sXodbR9QZjUBmPdDPOfuU5uFVo8x6fOGdj0SPrbsuYMGta9XfH5KzwNvP15CPD3bIEEg=
+  </data>
+ </layer>
+ <objectgroup name="Слой объектов 1" width="100" height="40">
+  <object type="player" gid="23" x="128" y="192"/>
+  <object type="light" gid="5" x="192" y="96"/>
+  <object type="light" gid="5" x="160" y="96"/>
+  <object type="light" gid="5" x="512" y="96"/>
+  <object type="light" gid="5" x="480" y="96"/>
+  <object type="light" gid="5" x="800" y="96"/>
+  <object type="light" gid="5" x="800" y="288"/>
+  <object type="light" gid="5" x="800" y="320"/>
+  <object type="light" gid="5" x="256" y="352"/>
+  <object type="light" gid="5" x="64" y="416"/>
+  <object type="light" gid="5" x="64" y="608"/>
+  <object type="light" gid="5" x="448" y="608"/>
+  <object type="light" gid="5" x="800" y="608"/>
+  <object type="light" gid="5" x="1056" y="608"/>
+  <object type="light" gid="5" x="1056" y="416"/>
+  <object type="light" gid="5" x="1248" y="416"/>
+  <object type="light" gid="5" x="1056" y="128"/>
+  <object type="light" gid="5" x="1312" y="128"/>
+  <object type="light" gid="5" x="1536" y="128"/>
+  <object type="light" gid="5" x="1792" y="128"/>
+  <object type="light" gid="5" x="1984" y="128"/>
+  <object type="light" gid="5" x="2208" y="128"/>
+  <object type="light" gid="5" x="2208" y="288"/>
+  <object type="light" gid="5" x="2400" y="288"/>
+  <object type="light" gid="5" x="2496" y="448"/>
+  <object type="light" gid="5" x="2336" y="576"/>
+  <object type="light" gid="5" x="2080" y="576"/>
+  <object type="light" gid="5" x="1792" y="448"/>
+  <object type="light" gid="5" x="1632" y="608"/>
+  <object type="light" gid="5" x="1408" y="544"/>
+  <object type="light" gid="5" x="1120" y="704"/>
+  <object type="light" gid="5" x="768" y="736"/>
+  <object type="light" gid="5" x="512" y="736"/>
+  <object type="light" gid="5" x="256" y="928"/>
+  <object type="light" gid="5" x="672" y="896"/>
+  <object type="light" gid="5" x="640" y="896"/>
+  <object type="light" gid="5" x="960" y="896"/>
+  <object type="light" gid="5" x="1312" y="1088"/>
+  <object type="light" gid="5" x="448" y="1088"/>
+  <object type="light" gid="5" x="640" y="1088"/>
+  <object type="light" gid="5" x="1760" y="1088"/>
+  <object type="light" gid="5" x="1952" y="1088"/>
+  <object type="light" gid="5" x="2176" y="864"/>
+  <object type="light" gid="5" x="1696" y="864"/>
+  <object type="light" gid="5" x="1984" y="800"/>
+  <object type="light" gid="5" x="1472" y="832"/>
+  <object type="light" gid="5" x="2496" y="768"/>
+  <object type="light" gid="5" x="2752" y="992"/>
+  <object type="light" gid="5" x="2976" y="608"/>
+  <object type="light" gid="5" x="2880" y="416"/>
+  <object type="light" gid="5" x="2944" y="224"/>
+  <object type="light" gid="5" x="2464" y="1024"/>
+  <object type="light" gid="5" x="2432" y="1024"/>
+ </objectgroup>
+</map>

@@ -36,4 +36,5 @@ private:
     void initSprite();
     void initShaders();
     void initTexture();
+    void initLevel();
 };

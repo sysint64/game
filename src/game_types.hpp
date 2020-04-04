@@ -130,3 +130,10 @@ struct StaticArray {
     size_t size;
     T* items;
 };
+
+template<typename T>
+struct SparseArray {
+    size_t size;
+    i64* keys;
+    T* items;
+};

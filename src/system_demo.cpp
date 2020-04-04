@@ -7,6 +7,7 @@ void DemoSystem::init(GameMemory* memory) {
     this->initSprite();
     this->initShaders();
     this->initTexture();
+    // this->initLevel();
 }
 
 void DemoSystem::onRender() {
@@ -119,4 +120,13 @@ void DemoSystem::initTexture() {
         .magFilter = true,
     };
     testSpriteTexture = gapiCreateTexture2D(testTexture, params);
+}
+
+void DemoSystem::initLevel() {
+    const Result<AssetData> levelResult = platformLoadAssetData(
+        &memory->assetsBuffer,
+        AssetType::level,
+        "test.tmx"
+    );
+    const AssetData level = resultUnwrap(levelResult);
 }

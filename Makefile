@@ -1,5 +1,5 @@
 BUILDDIR = build
-LDFLAGS = -ljpeg -lpng
+LDFLAGS = -ljpeg -lpng -ltmx
 CXX = clang++
 CXXFLAGS = -I. -Ilib/imgui/ -Ilib/imgui/examples/ -Wall -std=c++11 -g -DVALIDATE
 SANITIZE = false

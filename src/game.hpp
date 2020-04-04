@@ -2,7 +2,9 @@
 
 #include "memory.hpp"
 #include "gapi.hpp"
+#include "storage.hpp"
 #include "system_demo.hpp"
+#include "system_render.hpp"
 
 enum class Room {
     titleScreen,
@@ -25,10 +27,12 @@ public:
 
     RegionMemoryBuffer rootMemoryBuffer;
     GameMemory memory;
+    Storage storage;
     Room room = Room::debugLevel;
 
     // Systems
     DemoSystem demoSystem;
+    RenderSystem renderSystem;
 
     // Methods
     void init();
