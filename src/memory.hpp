@@ -15,8 +15,17 @@ struct StackMemoryBuffer {
     size_t offset;
 };
 
+struct ArenaMemoryBuffer {
+    u8* base;
+    u8* free;
+    u64 size;
+    u64 chunkSize;
+    size_t offset;
+};
+
 struct GameMemory {
     RegionMemoryBuffer eternityBuffer;
+    RegionMemoryBuffer componentsBuffer;
     RegionMemoryBuffer frameBuffer;
     RegionMemoryBuffer assetsBuffer;
     RegionMemoryBuffer tmpBuffer;
@@ -25,6 +34,8 @@ struct GameMemory {
 Result<RegionMemoryBuffer> createRegionMemoryBuffer(u64 size);
 
 Result<StackMemoryBuffer> createStackMemoryBuffer(RegionMemoryBuffer* root, u64 size);
+
+Result<ArenaMemoryBuffer> createArenaMemoryBuffer(RegionMemoryBuffer* root, u64 size, u64 chunkSize);
 
 void regionMemoryBufferAddRegion(RegionMemoryBuffer* where, RegionMemoryBuffer* buffer, u64 size);
 

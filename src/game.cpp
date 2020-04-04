@@ -8,16 +8,18 @@
 #include "loader_tmx.hpp"
 
 void Game::init() {
-    auto bufferResult = createRegionMemoryBuffer(megabytes(75));
+    auto bufferResult = createRegionMemoryBuffer(megabytes(85));
     rootMemoryBuffer = resultUnwrap(bufferResult);
 
     regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.eternityBuffer, megabytes(10));
+    regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.componentsBuffer, megabytes(10));
     regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.assetsBuffer, megabytes(40));
     regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.frameBuffer, megabytes(20));
     regionMemoryBufferAddRegion(&rootMemoryBuffer, &memory.tmpBuffer, megabytes(5));
 }
 
 void Game::afterInit() {
+    storage.init(&memory);
     demoSystem.init(&memory);
     renderSystem.init(&memory, &storage);
 }

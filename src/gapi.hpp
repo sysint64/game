@@ -31,6 +31,7 @@ struct GApiContext;
 #endif
 
 #include "game_types.hpp"
+#include "containers.hpp"
 #include "platform.hpp"
 #include "assets.hpp"
 #include <glm/mat4x4.hpp>

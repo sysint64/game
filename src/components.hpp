@@ -1,5 +1,7 @@
 #pragma once
 
+#include "gapi.hpp"
+
 enum RenderCommand {
     ColorPipeline,
     TexturePipeline,

@@ -34,6 +34,22 @@ Result<StackMemoryBuffer> createStackMemoryBuffer(RegionMemoryBuffer* root, u64 
     return resultCreateSuccess(buffer);
 }
 
+Result<ArenaMemoryBuffer> createArenaMemoryBuffer(RegionMemoryBuffer* where, u64 size, u64 chunkSize) {
+    Result<u8*> baseResult = regionMemoryBufferAlloc(where, size);
+
+    if (resultHasError(baseResult)) {
+        return switchError<ArenaMemoryBuffer>(baseResult);
+    }
+    else {
+        ArenaMemoryBuffer buffer;
+        u8* base = resultUnwrap(baseResult);
+        buffer.size = size;
+        buffer.chunkSize = chunkSize;
+        buffer.base = base;
+        return resultCreateSuccess(buffer);
+    }
+}
+
 void regionMemoryBufferAddRegion(RegionMemoryBuffer* where, RegionMemoryBuffer* buffer, u64 size) {
     assert(where->offset + size <= where->size);
 

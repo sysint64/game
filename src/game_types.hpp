@@ -124,16 +124,3 @@ inline T resultUnwrap(Result<T> result) {
 
     return result.payload;
 }
-
-template<typename T>
-struct StaticArray {
-    size_t size;
-    T* items;
-};
-
-template<typename T>
-struct SparseArray {
-    size_t size;
-    i64* keys;
-    T* items;
-};

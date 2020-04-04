@@ -232,8 +232,8 @@ Result<ShaderProgram> gapiCreateShaderProgram(const char* name, StaticArray<Shad
     program.name = name;
 
     for (size_t i = 0; i < shaders.size; i += 1) {
-        glAttachShader(program.id, shaders.items[i].id);
-        puts(shaders.items[i].name);
+        glAttachShader(program.id, shaders.getItems()[i].id);
+        puts(shaders.getItems()[i].name);
     }
 
     glLinkProgram(program.id);
@@ -282,6 +282,7 @@ static Result<GLint> checkProgramStatus(const ShaderProgram program, const GLenu
 void gapiBindShaderProgram(const ShaderProgram program) {
 
 #ifdef VALIDATE
+    printf("ID: %d\n", program.id);
     glValidateProgram(program.id);
     const auto statusReault = checkProgramStatus(program, GL_VALIDATE_STATUS);
     resultUnwrap(statusReault);

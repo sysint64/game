@@ -9,8 +9,8 @@ void RenderSystem::init(GameMemory* memory, Storage* storage) {
 }
 
 void RenderSystem::onRender() {
-    for (int i = 0; i < storage->renderCommands.size; ++i) {
-        const auto command = storage->renderCommands.items[i];
+    for (int i = 0; i < storage->renderCommands.getCount(); ++i) {
+        const auto command = storage->renderCommands.getItems()[i];
         applyCommand(command);
     }
 }
@@ -52,13 +52,15 @@ void RenderSystem::applyCommand(RenderCommandComponent component) {
 }
 
 void RenderSystem::applyColorPipelineCommand() {
+    puts("WTF COLOR");
     gapiBindShaderProgram(colorShader);
     currentShader = &colorShader;
 }
 
 void RenderSystem::applyTexturePipelineCommand() {
+    puts("WTF");
     gapiBindShaderProgram(textureShader);
-    currentShader = &colorShader;
+    currentShader = &textureShader;
 }
 
 void RenderSystem::applySetMVPShaderUniformCommand(RenderCommandParams params) {
@@ -156,10 +158,7 @@ void RenderSystem::initShaders() {
 
     const auto res = gapiCreateShaderProgram(
         "texture_shader_program",
-        StaticArray<Shader>{
-            .size = 2,
-            .items = shaders
-        }
+        createStaticArray<Shader>(2, shaders)
     );
 
     textureShader = resultUnwrap(res);
