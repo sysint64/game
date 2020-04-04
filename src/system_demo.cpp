@@ -11,7 +11,6 @@ void DemoSystem::init(GameMemory* memory) {
 }
 
 void DemoSystem::onRender() {
-    printf("PROGRAM ID IS: %d\n", spriteShader.id);
     gapiBindShaderProgram(spriteShader);
 
     gapiSetShaderProgramUniformMat4f(
@@ -97,8 +96,6 @@ void DemoSystem::initShaders() {
     );
 
     spriteShader = resultUnwrap(res);
-
-    printf("PROGRAM ID IS: %d\n", spriteShader.id);
 
     auto locRes = gapiGetShaderUniformLocation(spriteShader, "MVP");
     spriteShaderLocationMVP = resultUnwrap(locRes);

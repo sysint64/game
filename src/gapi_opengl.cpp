@@ -282,7 +282,6 @@ static Result<GLint> checkProgramStatus(const ShaderProgram program, const GLenu
 void gapiBindShaderProgram(const ShaderProgram program) {
 
 #ifdef VALIDATE
-    printf("ID: %d\n", program.id);
     glValidateProgram(program.id);
     const auto statusReault = checkProgramStatus(program, GL_VALIDATE_STATUS);
     resultUnwrap(statusReault);

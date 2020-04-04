@@ -52,13 +52,11 @@ void RenderSystem::applyCommand(RenderCommandComponent component) {
 }
 
 void RenderSystem::applyColorPipelineCommand() {
-    puts("WTF COLOR");
     gapiBindShaderProgram(colorShader);
     currentShader = &colorShader;
 }
 
 void RenderSystem::applyTexturePipelineCommand() {
-    puts("WTF");
     gapiBindShaderProgram(textureShader);
     currentShader = &textureShader;
 }
